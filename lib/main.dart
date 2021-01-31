@@ -101,16 +101,16 @@ Widget ProjectInfo(Key key, ProjectDetail projectDetail) {
   return Column(
     children: <Widget>[
       Container(
-        decoration:  BoxDecoration(
-          color: Colors.white54,
-          border:  Border.all(
-            color: Colors.orange,
-            width: 1.0
-          )
-        ),
+        // decoration:  BoxDecoration(
+        //   color: Colors.white54,
+        //   border:  Border.all(
+        //     color: Colors.orange,
+        //     width: 1.0
+        //   )
+        // ),
         child: Text('${projectDetail.description}',
           style: TextStyle(
-            color: Colors.orange,
+            color: Colors.grey,
             fontFamily: 'Raleway',
             fontSize: 11.0,
             fontWeight: FontWeight.normal,
