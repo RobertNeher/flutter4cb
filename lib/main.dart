@@ -73,17 +73,20 @@ List<Widget> projectList(Key key, List<Project> projects) {
       SizedBox(
         height: 10.0,
       ),
-      Container(
-          color: Colors.white54,
-          child: Text('${project.id}: ${project.name}',
-              style: TextStyle(
-                color: Colors.orange,
-                fontFamily: 'Raleway',
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+      InkWell(
+        child: Text(
+          '${project.id}: ${project.name}',
+          style: TextStyle(
+            color: Colors.orange,
+            fontFamily: 'Raleway',
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        onTap: () {
+          print('Clicked on ${project.id}');
+        },
+      ),
       FutureBuilder<ProjectDetail>(
           future: projectDetail,
           builder: (context, snapshot) {
@@ -98,28 +101,30 @@ List<Widget> projectList(Key key, List<Project> projects) {
 }
 
 Widget ProjectInfo(Key key, ProjectDetail projectDetail) {
-  return Column(
-    children: <Widget>[
-      Container(
-        // decoration:  BoxDecoration(
-        //   color: Colors.white54,
-        //   border:  Border.all(
-        //     color: Colors.orange,
-        //     width: 1.0
-        //   )
-        // ),
-        child: Text('${projectDetail.description}',
-          style: TextStyle(
-            color: Colors.grey,
-            fontFamily: 'Raleway',
-            fontSize: 11.0,
-            fontWeight: FontWeight.normal,
-          )
+  return Column(children: <Widget>[
+    InkWell(
+      // decoration:  BoxDecoration(
+      //   color: Colors.white54,
+      //   border:  Border.all(
+      //     color: Colors.orange,
+      //     width: 1.0
+      //   )
+      // ),
+      child: Text(
+        '${projectDetail.description}',
+        style: TextStyle(
+          color: Colors.grey,
+          fontFamily: 'Raleway',
+          fontSize: 11.0,
+          fontWeight: FontWeight.normal,
         ),
       ),
-      SizedBox(
-        height: 10.0,
-      )
-    ]
-  );
+      onTap: () {
+        print('Clicked on description of ${projectDetail.id}');
+      },
+    ),
+    SizedBox(
+      height: 10.0,
+    )
+  ]);
 }
