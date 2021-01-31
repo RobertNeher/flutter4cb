@@ -1,0 +1,4 @@
+2020-11-18 14:42:35,114 - slow-request - Request-1 127.0.0.1 - "GET /hc/ping.spr HTTP/1.1" [-] "curl/7.61.1" "-" free: 714 Mb, total: 1052 Mb, max: 2821 Mb, vm: 9018 Mb threads: 0/40 dbcons: 0/2 {Req#=1, Sess#=-, serverId=server}
+2020-11-18 14:42:35,114 - slow-request - Request-2 127.0.0.1 - "GET /hc/ping.spr HTTP/1.1" [-] "curl/7.61.1" "-" free: 714 Mb, total: 1052 Mb, max: 2821 Mb, vm: 9018 Mb threads: 0/40 dbcons: 0/2 {Req#=2, Sess#=-, serverId=server}
+2020-11-18 14:42:35,119 - Request-1 elapsed: 227 ms. free: 673 Mb, total: 1052 Mb, max: 2821 Mb, vm: 9020 Mb threads: 0/40 dbcons: 0/2 {Req#=1, Sess#=-, serverId=server}
+2020-11-18 14:42:35,120 - Request-2 elapsed: 227 ms. free: 673 Mb, total: 1052 Mb, max: 2821 Mb, vm: 9020 Mb threads: 0/40 dbcons: 0/2 {Req#=2, Sess#=-, serverId=server}

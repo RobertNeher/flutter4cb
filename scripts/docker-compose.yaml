@@ -1,0 +1,117 @@
+# Copyright by Intland Software, https://www.intland.com
+#
+# All rights reserved.
+#
+# Please note that if you change this docker file, we do not take any responsibility and we are not liable for
+# any damage caused through use of this image, be it indirect, special, incidental
+# or consequential damages (including but not limited to damages for loss of business, loss of profits, interruption or the like).
+
+version: '2.1'
+
+services:
+  codebeamer-db:
+    image: intland/mysql:5.7.21
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+      - MYSQL_DATABASE=codebeamer
+      - MYSQL_MAX_ALLOWED_PACKET=1024M
+      - MYSQL_INNODB_BUFFER_POOL_SIZE=1G
+      - MYSQL_INNODB_LOG_FILE_SIZE=256M
+      - MYSQL_INNODB_LOG_BUFFER_SIZE=256M
+    volumes:
+      - codebeamer-db-data:/var/lib/mysql/data
+
+  codebeamerdo-app:
+    image: intland/codebeamer:10.1-SP3
+    ports:
+      - 8080:8080
+    environment:
+      - TZ=Europe/Berlin
+      - WAIT_HOSTS=container-mysql:3306
+      - WAIT_HOSTS_TIMEOUT=120
+      - CB_database_JDBC_Username=user
+      - CB_database_JDBC_Password=pass
+      - CB_database_JDBC_Driver=com.mysql.jdbc.Driver
+      - CB_database_JDBC_ConnectionURL=jdbc:mysql://container-mysql:3306/codebeamer?autoReconnect=true&zeroDateTimeBehavior=convertToNull&emulateLocators=true&characterEncoding=UTF-8&useSSL=false
+      - CB_database_JDBC_Timeout=120
+      - CB_MAC_ADDRESS=84:EF:18:D2:21:8F
+      - CB_LICENSE=<license code="6DB02FA40B8766B4" companyName="BHC GmbH" expire="Dec-31-2020" generatedForRelease="9.0.0 - ... " generationTime="Oct-01-2020 10:04" generatorRelease="20.11.0-PRE5" generatorUser="houssem.abderrahman@intland.com" hostid="LIN-84:EF:18:D2:21:8F">
+          <product type="ALM +Escalation +Doors bridge +Jira integration +Branching">
+            <user kind="floating" licenses="4" type="user"/>
+            <user kind="named" licenses="5" type="user"/>
+          </product>
+        </license>
+      - CB_mail_host=smtp.plm4ee.de
+      - CB_mail_user=codebeamer@plm4ee.de
+      - CB_mail_password=spBsg63_qbdm
+      - CB_mail_ssl=false
+      - CB_mail_smtpPort=25
+      - CB_mail_serverScheme=https
+      - CB_mail_from=codebeamer@plm4ee.de
+      - CB_mail_localname=cb.plm4ee.de
+      - CB_mail_serverPort=443
+
+    volumes:
+      - .\cb-data\codebeamer-app-logo:/home/appuser/codebeamer/tomcat/webapps/ROOT/config/logo
+      - .\cb-data\codebeamer-app-logs:/home/appuser/codebeamer/logs
+      - .\cb-data\codebeamer-app-tmp:/home/appuser/codebeamer/tomcat/tmp
+    #   - .\cb-data\codebeamer-app-repository-logs:/home/appuser/codebeamer/logs
+      - .\cb-data\codebeamer-app-repository-update:/home/appuser/codebeamer/update
+      - .\cb-data\codebeamer-app-repository-access:/home/appuser/codebeamer/repository/access
+      - .\cb-data\codebeamer-app-repository-svn:/home/appuser/codebeamer/repository/svn
+      - .\cb-data\codebeamer-app-repository-git:/home/appuser/codebeamer/repository/git
+      - .\cb-data\codebeamer-app-repository-hg:/home/appuser/codebeamer/repository/hg
+      - .\cb-data\codebeamer-app-repository-docs:/home/appuser/codebeamer/repository/docs
+      - .\cb-data\codebeamer-app-repository-wiki:/home/appuser/codebeamer/repository/wiki
+      - .\cb-data\codebeamer-app-repository-search:/home/appuser/codebeamer/repository/search
+
+    links:
+      - codebeamer-db:container-mysql
+
+volumes:
+  codebeamer-db-data:
+    name: codebeamer-db-data
+    external: true
+  codebeamer-app-repository-docs:
+    name: codebeamer-app-repository-docs
+    external: true
+  codebeamer-app-repository-logs:
+    name: codebeamer-app-repository-logs
+    external: true
+  codebeamer-app-repository-update:
+    name: codebeamer-app-repository-update
+    external: true
+  codebeamer-app-repository-access:
+    name: codebeamer-app-repository-access
+    external: true
+  codebeamer-app-repository-svn:
+    name: codebeamer-app-repository-svn
+    external: true
+  codebeamer-app-repository-git:
+    name: codebeamer-app-repository-git
+    external: true
+  codebeamer-app-repository-hg:
+    name: codebeamer-app-repository-hg
+    external: true
+  codebeamer-app-repository-docs:
+    name: codebeamer-app-repository-docs
+    external: true
+  codebeamer-app-repository-wiki:
+    name: codebeamer-app-repository-wiki
+    external: true
+  codebeamer-app-repository-search:
+    name: codebeamer-app-repository-search
+    external: true
+  codebeamer-db-data:
+    name: codebeamer-db-data
+    external: true
+  codebeamer-app-logo:
+    name: codebeamer-app-logo
+    external: true
+  codebeamer-app-logs:
+    name: codebeamer-app-logs
+    external: true
+  codebeamer-app-tmp:
+    name: codebeamer-app-tmp
+    external: true
