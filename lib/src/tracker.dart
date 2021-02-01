@@ -4,14 +4,14 @@ import 'configuration.dart';
 import 'package:http/http.dart' as http;
 
 void main(List<String> args) {
-  print(getProjectTrackers(int.parse(args[0])).then((value) => value.forEach((element) {
+  print(fetchProjectTrackers(int.parse(args[0])).then((value) => value.forEach((element) {
         if (element is Tracker) {
           print(element.name);
         }
       })));
 }
 
-Future<List<Tracker>> getProjectTrackers(int projectID) async {
+Future<List<Tracker>> fetchProjectTrackers(int projectID) async {
   Configuration config = Configuration();
   List<Tracker> trackers;
 
@@ -52,6 +52,7 @@ class Tracker {
     return data;
   }
 }
+
 class TrackerItem {
   int id;
   String name;
@@ -62,34 +63,34 @@ class TrackerItem {
   String modifiedAt;
   CreatedBy modifiedBy;
   CreatedBy parent;
-  List<Owners> owners;
+  // List<Owners> owners;
   int version;
   String assignedAt;
-  List<AssignedTo> assignedTo;
+  // List<AssignedTo> assignedTo;
   String startDate;
   String endDate;
   String closedAt;
   int storyPoints;
   CreatedBy tracker;
-  List<Children> children;
+  // List<Children> children;
   List<CustomFields> customFields;
   CreatedBy priority;
   int accruedMillis;
   int estimatedMillis;
   int spentMillis;
   CreatedBy status;
-  List<Platforms> platforms;
-  List<Categories> categories;
-  List<Subjects> subjects;
-  List<Resolutions> resolutions;
-  List<Severities> severities;
+  // List<Platforms> platforms;
+  // List<Categories> categories;
+  // List<Subjects> subjects;
+  // List<Resolutions> resolutions;
+  // List<Severities> severities;
   CreatedBy releaseMethod;
-  List<Teams> teams;
-  List<Areas> areas;
-  List<Versions> versions;
+  // List<Teams> teams;
+  // List<Areas> areas;
+  // List<Versions> versions;
   int ordinal;
   String typeName;
-  List<Comments> comments;
+  // List<Comments> comments;
 
   TrackerItem(
       {this.id,
@@ -101,34 +102,36 @@ class TrackerItem {
       this.modifiedAt,
       this.modifiedBy,
       this.parent,
-      this.owners,
+      // this.owners,
       this.version,
       this.assignedAt,
-      this.assignedTo,
+      // this.assignedTo,
       this.startDate,
       this.endDate,
       this.closedAt,
       this.storyPoints,
       this.tracker,
-      this.children,
+      // this.children,
       this.customFields,
       this.priority,
       this.accruedMillis,
       this.estimatedMillis,
       this.spentMillis,
       this.status,
-      this.platforms,
-      this.categories,
-      this.subjects,
-      this.resolutions,
-      this.severities,
+      // this.platforms,
+      // this.categories,
+      // this.subjects,
+      // this.resolutions,
+      // this.severities,
       this.releaseMethod,
-      this.teams,
-      this.areas,
-      this.versions,
+      // this.teams,
+      // this.areas,
+      // this.versions,
       this.ordinal,
       this.typeName,
-      this.comments});
+      // this.comments
+    });
+
 
   TrackerItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -145,20 +148,20 @@ class TrackerItem {
         : null;
     parent =
         json['parent'] != null ? new CreatedBy.fromJson(json['parent']) : null;
-    if (json['owners'] != null) {
-      owners = [];
-      json['owners'].forEach((v) {
-        owners.add(new Owners.fromJson(v));
-      });
-    }
+    // if (json['owners'] != null) {
+    //   owners = [];
+    //   json['owners'].forEach((v) {
+    //     owners.add(new Owners.fromJson(v));
+    //   });
+    // }
     version = json['version'];
     assignedAt = json['assignedAt'];
-    if (json['assignedTo'] != null) {
-      assignedTo = [];
-      json['assignedTo'].forEach((v) {
-        assignedTo.add(new AssignedTo.fromJson(v));
-      });
-    }
+    // if (json['assignedTo'] != null) {
+    //   assignedTo = [];
+    //   json['assignedTo'].forEach((v) {
+    //     assignedTo.add(new AssignedTo.fromJson(v));
+    //   });
+    // }
     startDate = json['startDate'];
     endDate = json['endDate'];
     closedAt = json['closedAt'];
@@ -166,12 +169,12 @@ class TrackerItem {
     tracker = json['tracker'] != null
         ? new CreatedBy.fromJson(json['tracker'])
         : null;
-    if (json['children'] != null) {
-      children = new List<Children>();
-      json['children'].forEach((v) {
-        children.add(new Children.fromJson(v));
-      });
-    }
+    // if (json['children'] != null) {
+    //   children = new List<Children>();
+    //   json['children'].forEach((v) {
+    //     children.add(new Children.fromJson(v));
+    //   });
+    // }
     if (json['customFields'] != null) {
       customFields = new List<CustomFields>();
       json['customFields'].forEach((v) {
@@ -186,65 +189,65 @@ class TrackerItem {
     spentMillis = json['spentMillis'];
     status =
         json['status'] != null ? new CreatedBy.fromJson(json['status']) : null;
-    if (json['platforms'] != null) {
-      platforms = new List<Platforms>();
-      json['platforms'].forEach((v) {
-        platforms.add(new Platforms.fromJson(v));
-      });
-    }
-    if (json['categories'] != null) {
-      categories = new List<Categories>();
-      json['categories'].forEach((v) {
-        categories.add(new Categories.fromJson(v));
-      });
-    }
-    if (json['subjects'] != null) {
-      subjects = new List<Subjects>();
-      json['subjects'].forEach((v) {
-        subjects.add(new Subjects.fromJson(v));
-      });
-    }
-    if (json['resolutions'] != null) {
-      resolutions = new List<Resolutions>();
-      json['resolutions'].forEach((v) {
-        resolutions.add(new Resolutions.fromJson(v));
-      });
-    }
-    if (json['severities'] != null) {
-      severities = new List<Severities>();
-      json['severities'].forEach((v) {
-        severities.add(new Severities.fromJson(v));
-      });
-    }
+    // if (json['platforms'] != null) {
+    //   platforms = new List<Platforms>();
+    //   json['platforms'].forEach((v) {
+    //     platforms.add(new Platforms.fromJson(v));
+    //   });
+    // }
+    // if (json['categories'] != null) {
+    //   categories = new List<Categories>();
+    //   json['categories'].forEach((v) {
+    //     categories.add(new Categories.fromJson(v));
+    //   });
+    // }
+    // if (json['subjects'] != null) {
+    //   subjects = new List<Subjects>();
+    //   json['subjects'].forEach((v) {
+    //     subjects.add(new Subjects.fromJson(v));
+    //   });
+    // }
+    // if (json['resolutions'] != null) {
+    //   resolutions = new List<Resolutions>();
+    //   json['resolutions'].forEach((v) {
+    //     resolutions.add(new Resolutions.fromJson(v));
+    //   });
+    // }
+    // if (json['severities'] != null) {
+    //   severities = new List<Severities>();
+    //   json['severities'].forEach((v) {
+    //     severities.add(new Severities.fromJson(v));
+    //   });
+    // }
     releaseMethod = json['releaseMethod'] != null
         ? new CreatedBy.fromJson(json['releaseMethod'])
         : null;
-    if (json['teams'] != null) {
-      teams = new List<Teams>();
-      json['teams'].forEach((v) {
-        teams.add(new Teams.fromJson(v));
-      });
-    }
-    if (json['areas'] != null) {
-      areas = new List<Areas>();
-      json['areas'].forEach((v) {
-        areas.add(new Areas.fromJson(v));
-      });
-    }
-    if (json['versions'] != null) {
-      versions = new List<Versions>();
-      json['versions'].forEach((v) {
-        versions.add(new Versions.fromJson(v));
-      });
-    }
+    // if (json['teams'] != null) {
+    //   teams = new List<Teams>();
+    //   json['teams'].forEach((v) {
+    //     teams.add(new Teams.fromJson(v));
+    //   });
+    // }
+    // if (json['areas'] != null) {
+    //   areas = new List<Areas>();
+    //   json['areas'].forEach((v) {
+    //     areas.add(new Areas.fromJson(v));
+    //   });
+    // }
+    // if (json['versions'] != null) {
+    //   versions = new List<Versions>();
+    //   json['versions'].forEach((v) {
+    //     versions.add(new Versions.fromJson(v));
+    //   });
+    // }
     ordinal = json['ordinal'];
     typeName = json['typeName'];
-    if (json['comments'] != null) {
-      comments = new List<Comments>();
-      json['comments'].forEach((v) {
-        comments.add(new Comments.fromJson(v));
-      });
-    }
+    // if (json['comments'] != null) {
+    //   comments = new List<Comments>();
+    //   json['comments'].forEach((v) {
+    //     comments.add(new Comments.fromJson(v));
+    //   });
+    // }
   }
 
   Map<String, dynamic> toJson() {
@@ -264,14 +267,14 @@ class TrackerItem {
     if (this.parent != null) {
       data['parent'] = this.parent.toJson();
     }
-    if (this.owners != null) {
-      data['owners'] = this.owners.map((v) => v.toJson()).toList();
-    }
+    // if (this.owners != null) {
+    //   data['owners'] = this.owners.map((v) => v.toJson()).toList();
+    // }
     data['version'] = this.version;
     data['assignedAt'] = this.assignedAt;
-    if (this.assignedTo != null) {
-      data['assignedTo'] = this.assignedTo.map((v) => v.toJson()).toList();
-    }
+    // if (this.assignedTo != null) {
+    //   data['assignedTo'] = this.assignedTo.map((v) => v.toJson()).toList();
+    // }
     data['startDate'] = this.startDate;
     data['endDate'] = this.endDate;
     data['closedAt'] = this.closedAt;
@@ -279,9 +282,9 @@ class TrackerItem {
     if (this.tracker != null) {
       data['tracker'] = this.tracker.toJson();
     }
-    if (this.children != null) {
-      data['children'] = this.children.map((v) => v.toJson()).toList();
-    }
+    // if (this.children != null) {
+    //   data['children'] = this.children.map((v) => v.toJson()).toList();
+    // }
     if (this.customFields != null) {
       data['customFields'] = this.customFields.map((v) => v.toJson()).toList();
     }
@@ -294,38 +297,38 @@ class TrackerItem {
     if (this.status != null) {
       data['status'] = this.status.toJson();
     }
-    if (this.platforms != null) {
-      data['platforms'] = this.platforms.map((v) => v.toJson()).toList();
-    }
-    if (this.categories != null) {
-      data['categories'] = this.categories.map((v) => v.toJson()).toList();
-    }
-    if (this.subjects != null) {
-      data['subjects'] = this.subjects.map((v) => v.toJson()).toList();
-    }
-    if (this.resolutions != null) {
-      data['resolutions'] = this.resolutions.map((v) => v.toJson()).toList();
-    }
-    if (this.severities != null) {
-      data['severities'] = this.severities.map((v) => v.toJson()).toList();
-    }
+    // if (this.platforms != null) {
+    //   data['platforms'] = this.platforms.map((v) => v.toJson()).toList();
+    // }
+    // if (this.categories != null) {
+    //   data['categories'] = this.categories.map((v) => v.toJson()).toList();
+    // }
+    // if (this.subjects != null) {
+    //   data['subjects'] = this.subjects.map((v) => v.toJson()).toList();
+    // }
+    // if (this.resolutions != null) {
+    //   data['resolutions'] = this.resolutions.map((v) => v.toJson()).toList();
+    // }
+    // if (this.severities != null) {
+    //   data['severities'] = this.severities.map((v) => v.toJson()).toList();
+    // }
     if (this.releaseMethod != null) {
       data['releaseMethod'] = this.releaseMethod.toJson();
     }
-    if (this.teams != null) {
-      data['teams'] = this.teams.map((v) => v.toJson()).toList();
-    }
-    if (this.areas != null) {
-      data['areas'] = this.areas.map((v) => v.toJson()).toList();
-    }
-    if (this.versions != null) {
-      data['versions'] = this.versions.map((v) => v.toJson()).toList();
-    }
+    // if (this.teams != null) {
+    //   data['teams'] = this.teams.map((v) => v.toJson()).toList();
+    // }
+    // if (this.areas != null) {
+    //   data['areas'] = this.areas.map((v) => v.toJson()).toList();
+    // }
+    // if (this.versions != null) {
+    //   data['versions'] = this.versions.map((v) => v.toJson()).toList();
+    // }
     data['ordinal'] = this.ordinal;
     data['typeName'] = this.typeName;
-    if (this.comments != null) {
-      data['comments'] = this.comments.map((v) => v.toJson()).toList();
-    }
+    // if (this.comments != null) {
+    //   data['comments'] = this.comments.map((v) => v.toJson()).toList();
+    // }
     return data;
   }
 }
