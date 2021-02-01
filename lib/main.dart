@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter4cb/src/tracker.dart';
 // import 'package:flutter4cb/codebeamer.dart';
 import 'package:http/http.dart' as http;
 import 'src/project.dart';
@@ -12,10 +13,13 @@ void main() => runApp(Flutter4cB());
 class Flutter4cB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'BHC Offerings for Intland codeBeamer';
+    final appTitle = 'Flutter - Intland codeBeamer Custom Dialogs';
 
     return MaterialApp(
       title: appTitle,
+      theme: ThemeData(
+        primaryColor: Colors.orange,
+      ),
       home: StartingPage(title: appTitle),
     );
   }
@@ -31,7 +35,17 @@ class StartingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          leading: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: Image.asset(
+            'images/BHCLogo.png')),
+          title: Text(title,
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+            )
+          ),
+          centerTitle: true,
         ),
         body: Container(
           child: FutureBuilder<List<Project>>(
@@ -43,7 +57,8 @@ class StartingPage extends StatelessWidget {
                   : Center(child: CircularProgressIndicator());
             },
           ),
-        ));
+      )
+    );
   }
 }
 
@@ -63,7 +78,6 @@ class ProjectList extends StatelessWidget {
 }
 
 List<Widget> projectList(Key key, List<Project> projects) {
-  // ProjectDetail pd = ProjectDetail();
   List<Widget> list = <Widget>[];
 
   projects.forEach((project) {
@@ -92,7 +106,7 @@ List<Widget> projectList(Key key, List<Project> projects) {
           builder: (context, snapshot) {
             if (snapshot.hasError) print(snapshot.error);
             return snapshot.hasData
-                ? ProjectInfo(key, snapshot.data)
+                ? projectInfo(context, snapshot.data)
                 : Center(child: CircularProgressIndicator());
           }),
     ]));
@@ -100,7 +114,7 @@ List<Widget> projectList(Key key, List<Project> projects) {
   return list;
 }
 
-Widget ProjectInfo(Key key, ProjectDetail projectDetail) {
+Widget projectInfo(BuildContext context, ProjectDetail projectDetail) {
   return Column(children: <Widget>[
     InkWell(
       // decoration:  BoxDecoration(
@@ -120,11 +134,74 @@ Widget ProjectInfo(Key key, ProjectDetail projectDetail) {
         ),
       ),
       onTap: () {
-        print('Clicked on description of ${projectDetail.id}');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
+          trackerList(context, projectDetail.id);
+        }));
       },
     ),
     SizedBox(
       height: 10.0,
     )
   ]);
+}
+
+Widget trackerList(BuildContext context, int projectID) {
+  Future<List<Tracker>> trackerList = fetchProjectTrackers(projectID);
+
+  return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    SizedBox(
+      height: 10.0,
+    ),
+    FutureBuilder<List<Tracker>>(
+        future: trackerList,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          return snapshot.hasData
+              ? listTrackers(context, snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        }),
+  ]);
+}
+
+Widget listTrackers(BuildContext context, List<Tracker> trackers) {
+  List<Widget> list = <Widget>[];
+
+  trackers.forEach((tracker) {
+    print(tracker.name);
+    list.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            height: 10.0,
+          ),
+          InkWell(
+            child: Text(
+              '${tracker.id}: ${tracker.name}',
+              style: TextStyle(
+                color: Colors.orange,
+                fontFamily: 'Raleway',
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              print('Clicked on ${tracker.id}');
+            },
+          ),
+          // FutureBuilder<ProjectDetail>(
+          //     future: projectDetail,
+          //     builder: (context, snapshot) {
+          //       if (snapshot.hasError) print(snapshot.error);
+          //       return snapshot.hasData
+          //           ? ProjectInfo(context, snapshot.data)
+          //           : Center(child: CircularProgressIndicator());
+          //     }),
+        ]));
+  });
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: list,
+  );
 }
