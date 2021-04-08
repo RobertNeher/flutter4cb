@@ -10,12 +10,12 @@ void main() => runApp(Flutter4cB());
 class Flutter4cB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Flutter - Intland codeBeamer Custom Dialogs';
+    final appTitle = 'codeBeamer Custom Dialogs - Powered by Flutter';
 
     return MaterialApp(
       title: appTitle,
       theme: ThemeData(
-        primaryColor: Colors.orange,
+        primaryColor: Colors.blue,
       ),
       home: StartingPage(title: appTitle),
     );
@@ -34,7 +34,7 @@ class StartingPage extends StatelessWidget {
         appBar: AppBar(
           leading: Padding(
               padding: const EdgeInsets.all(1.0),
-              child: Image.asset('images/BHCLogo.png')),
+              child: Image.asset('images/VW.png')),
           title: Text(title,
               style: TextStyle(
                 fontFamily: 'Raleway',

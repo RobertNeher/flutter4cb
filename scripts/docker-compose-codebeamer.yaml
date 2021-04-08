@@ -23,7 +23,7 @@ services:
       - codebeamer-db-data:/var/lib/mysql/data
 
   codebeamer-app:
-    image: intland/codebeamer:10.1-SP3
+    image: intland/codebeamer:latest
     ports:
       - 8080:8080
     environment:

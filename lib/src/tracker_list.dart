@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'configuration.dart';
 import 'tracker.dart';
+import 'configuration.dart';
 
 class TrackerList extends StatefulWidget {
-  TrackerList({this.context, this.projectID, this.projectName, this.trackers})
-      : super();
+  TrackerList({this.context, this.projectID, this.projectName}) : super();
 
   final BuildContext context;
   final int projectID;
-  final List<Tracker> trackers;
   final String projectName;
 
   @override
@@ -21,7 +19,7 @@ class TrackerListState extends State<TrackerList> {
 
   @override
   void initState() {
-    title = 'Trackers of project ${widget.projectName})';
+    title = 'Tracker of project ${widget.projectName}';
     super.initState();
   }
 
@@ -32,90 +30,76 @@ class TrackerListState extends State<TrackerList> {
 
   @override
   Widget build(BuildContext context) {
+    Future<List<Tracker>> trackers = fetchProjectTrackers(widget.projectID);
+
     return Scaffold(
         appBar: AppBar(
           title: Text(
             title,
             style: TextStyle(
-                color: Colors.orange,
+                color: Colors.white,
                 fontFamily: 'Raleway',
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: trackerList(context, widget.projectID),
-        ));
-  }
-
-  List<Widget> trackerList(BuildContext context, int projectID) {
-    Future<List<Tracker>> trackerList = fetchProjectTrackers(projectID);
-    List<Widget> list = <Widget>[];
-
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          centerTitle: true,
-        ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          SizedBox(
-            height: 10.0,
-          ),
-          // FutureBuilder<List<Tracker>>(
-          //     future: trackerList,
-          //     builder: (context, snapshot) {
-          //       if (snapshot.hasError) print(snapshot.error);
-          //       return snapshot.hasData
-          //           ? listTrackers(context, snapshot.data)
-          //           : Center(child: CircularProgressIndicator());
-          //   }
-        ]),
-      );
-    }
+          Expanded(
+            child: FutureBuilder<List<Tracker>>(
+                future: trackers,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) print(snapshot.error);
+                  return snapshot.hasData
+                      ? ListView.separated(
+                          itemCount: snapshot.data.length,
+                          separatorBuilder: (context, index) {
+                            return Divider();
+                          },
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                                title: Text(
+                              snapshot.data[index].name,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Raleway',
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ));
+                          })
+                      : Center(child: CircularProgressIndicator());
+                }),
+          )
+        ]));
   }
 
-  Widget listTrackers(BuildContext context, List<Tracker> trackers) {
-    List<Widget> itemList = <Widget>[];
+  Widget trackerList(BuildContext context, List<Tracker> trackers) {
+    Column list = Column();
 
     trackers.forEach((tracker) {
-      print(tracker.name);
-      itemList.add(Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 10.0,
-            ),
-            InkWell(
-              child: Text(
-                '${tracker.id}: ${tracker.name}',
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontFamily: 'Raleway',
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
+      list.children.add(
+        InkWell(
+            child: Text(
+              '${tracker.id}: ${tracker.name}',
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Raleway',
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
               ),
-              onTap: () {
-                print('Clicked on ${tracker.id}');
-              },
             ),
-            // FutureBuilder<ProjectDetail>(
-            //     future: projectDetail,
-            //     builder: (context, snapshot) {
-            //       if (snapshot.hasError) print(snapshot.error);
-            //       return snapshot.hasData
-            //           ? ProjectInfo(context, snapshot.data)
-            //           : Center(child: CircularProgressIndicator());
-            //     }),
-          ]));
+            onTap: () {
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (BuildContext context) => TrackerItemList(
+              //             context: context,
+              //             trackerID: tracker.id,
+              //             trackerName: tracker.name)));
+            }),
+      );
     });
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: itemList,
-    );
+    return list;
   }
 }

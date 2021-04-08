@@ -23,7 +23,7 @@ services:
       - codebeamer-db-data:/var/lib/mysql/data
 
   codebeamerdo-app:
-    image: intland/codebeamer:10.1-SP3
+    image: intland/codebeamer:latest
     ports:
       - 8080:8080
     environment:
@@ -36,12 +36,12 @@ services:
       - CB_database_JDBC_ConnectionURL=jdbc:mysql://container-mysql:3306/codebeamer?autoReconnect=true&zeroDateTimeBehavior=convertToNull&emulateLocators=true&characterEncoding=UTF-8&useSSL=false
       - CB_database_JDBC_Timeout=120
       - CB_MAC_ADDRESS=84:EF:18:D2:21:8F
-      - CB_LICENSE=<license code="6DB02FA40B8766B4" companyName="BHC GmbH" expire="Dec-31-2020" generatedForRelease="9.0.0 - ... " generationTime="Oct-01-2020 10:04" generatorRelease="20.11.0-PRE5" generatorUser="houssem.abderrahman@intland.com" hostid="LIN-84:EF:18:D2:21:8F">
-          <product type="ALM +Escalation +Doors bridge +Jira integration +Branching">
-            <user kind="floating" licenses="4" type="user"/>
-            <user kind="named" licenses="5" type="user"/>
-          </product>
-        </license>
+      - CB_LICENSE=<license code="710A8F4D523898B2" companyName="BHC GmbH" expire="Dec-31-2021" generatedForRelease="20.11.0 - ... " generationTime="Jan-19-2021 14:43" generatorRelease="20.11" generatorUser="tkohalmi" hostid="LIN-84:EF:18:D2:21:8F">
+      <product type="ALM +Escalation +Doors bridge +Jira integration +Branching">
+          <user kind="floating" licenses="4" type="user"/>
+          <user kind="named" licenses="5" type="user"/>
+      </product>
+  </license>
       - CB_mail_host=smtp.plm4ee.de
       - CB_mail_user=codebeamer@plm4ee.de
       - CB_mail_password=spBsg63_qbdm

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter4cb/src/tracker.dart';
 import 'project.dart';
 import 'tracker_list.dart';
 import 'configuration.dart';
@@ -35,7 +34,7 @@ class ProjectListState extends State<ProjectList> {
           title: Text(
             title,
             style: TextStyle(
-                color: Colors.orange,
+                color: Colors.white,
                 fontFamily: 'Raleway',
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),
@@ -44,11 +43,11 @@ class ProjectListState extends State<ProjectList> {
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: projectList(widget.projects),
+          children: projectList(context, widget.projects),
         ));
   }
 
-  List<Widget> projectList(List<Project> projects) {
+  List<Widget> projectList(BuildContext context, List<Project> projects) {
     List<Widget> list = <Widget>[];
 
     projects.forEach((project) {
@@ -62,73 +61,39 @@ class ProjectListState extends State<ProjectList> {
           child: Text(
             '${project.id}: ${project.name}',
             style: TextStyle(
-              color: Colors.orange,
+              color: Colors.black,
               fontFamily: 'Raleway',
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
             ),
           ),
           onTap: () {
-            // Navigator.of(context)
-            //     .push(MaterialPageRoute(builder: (BuildContext context) {
-            //   TrackerList(context, project.name);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => TrackerList(
+                        context: context,
+                        projectID: project.id,
+                        projectName: project.name)));
           },
         ),
         FutureBuilder<ProjectDetail>(
-            future: projectDetail,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) print(snapshot.error);
-              return snapshot.hasData
-                  ? projectInfo(context, snapshot.data)
-                  : Center(child: CircularProgressIndicator());
-            }),
+          future: projectDetail,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+            return snapshot.hasData
+                ? Text(snapshot.data.description,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: 'Raleway',
+                      fontSize: 10.0,
+                      fontWeight: FontWeight.normal,
+                    ))
+                : Center(child: CircularProgressIndicator());
+          },
+        ),
       ]));
     });
     return list;
-  }
-
-  Widget projectInfo(BuildContext context, ProjectDetail projectDetail) {
-    Future<List<Tracker>> trackers = fetchProjectTrackers(projectDetail.id);
-
-    return Column(children: <Widget>[
-      // FutureBuilder<List<Tracker>>(
-      //     future: trackers,
-      //     builder: (context, snapshot) {
-      //       if (snapshot.hasError) print(snapshot.error);
-      //       return snapshot.hasData
-      //           ? TrackerList(
-      //               context: context,
-      //               projectName: projectDetail.name,
-      //               trackers: snapshot.data)
-      //           : Center(child: CircularProgressIndicator());
-      //     }),
-      InkWell(
-        // decoration:  BoxDecoration(
-        //   color: Colors.white54,
-        //   border:  Border.all(
-        //     color: Colors.orange,
-        //     width: 1.0
-        //   )
-        // ),
-        child: Text(
-          '${projectDetail.description}',
-          style: TextStyle(
-            color: Colors.grey,
-            fontFamily: 'Raleway',
-            fontSize: 11.0,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (BuildContext context) {
-            // TrackerList(context: context, projectName: projectDetail.name, trackers: );
-          }));
-        },
-      ),
-      SizedBox(
-        height: 10.0,
-      )
-    ]);
   }
 }
