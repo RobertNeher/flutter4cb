@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tracker.dart';
+import 'work_item_list.dart';
 import 'configuration.dart';
 
 class TrackerList extends StatefulWidget {
@@ -19,7 +20,7 @@ class TrackerListState extends State<TrackerList> {
 
   @override
   void initState() {
-    title = 'Tracker of project ${widget.projectName}';
+    title = 'Tracker of project ${widget.projectName} (${widget.projectID})';
     super.initState();
   }
 
@@ -59,14 +60,27 @@ class TrackerListState extends State<TrackerList> {
                           itemBuilder: (context, index) {
                             return ListTile(
                                 title: Text(
-                              snapshot.data[index].name,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'Raleway',
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ));
+                                  '${snapshot.data[index].name} (${snapshot.data[index].id})',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Raleway',
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            WorkItemList(
+                                                context: context,
+                                                trackerID:
+                                                    snapshot.data[index].id,
+                                                trackerName:
+                                                    snapshot.data[index].name)),
+                                  );
+                                });
                           })
                       : Center(child: CircularProgressIndicator());
                 }),
@@ -80,24 +94,16 @@ class TrackerListState extends State<TrackerList> {
     trackers.forEach((tracker) {
       list.children.add(
         InkWell(
-            child: Text(
-              '${tracker.id}: ${tracker.name}',
-              style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Raleway',
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
+          child: Text(
+            '${tracker.name} (${tracker.id})',
+            style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'Raleway',
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
             ),
-            onTap: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (BuildContext context) => TrackerItemList(
-              //             context: context,
-              //             trackerID: tracker.id,
-              //             trackerName: tracker.name)));
-            }),
+          ),
+        ),
       );
     });
     return list;

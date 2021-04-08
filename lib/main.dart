@@ -10,7 +10,7 @@ void main() => runApp(Flutter4cB());
 class Flutter4cB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'codeBeamer Custom Dialogs - Powered by Flutter';
+    final appTitle = 'codebeamer Custom Dialogs - Powered by Flutter';
 
     return MaterialApp(
       title: appTitle,

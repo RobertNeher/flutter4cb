@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'project.dart';
 import 'tracker_list.dart';
 import 'configuration.dart';
+import 'helper.dart';
 
 class ProjectList extends StatefulWidget {
   ProjectList({this.projects}) : super();
@@ -18,7 +19,7 @@ class ProjectListState extends State<ProjectList> {
 
   @override
   void initState() {
-    title = 'Projects on codeBeamer server (${config.RESTBaseURL})';
+    title = 'Projects on codebeamer server "${config.RESTBaseURL}"';
     super.initState();
   }
 
@@ -30,21 +31,45 @@ class ProjectListState extends State<ProjectList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            title,
-            style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Raleway',
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+          title,
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Raleway',
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: projectList(context, widget.projects),
-        ));
+        centerTitle: true,
+      ),
+      body: ListView.separated(
+        itemCount: widget.projects.length,
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemBuilder: (context, index) {
+          return ListTile(
+              title: Text(
+                '${widget.projects[index].name} (${widget.projects[index].id})',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'Raleway',
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => TrackerList(
+                            context: context,
+                            projectID: widget.projects[index].id,
+                            projectName: widget.projects[index].name)));
+              });
+        },
+      ),
+    );
   }
 
   List<Widget> projectList(BuildContext context, List<Project> projects) {
@@ -52,14 +77,13 @@ class ProjectListState extends State<ProjectList> {
 
     projects.forEach((project) {
       Future<ProjectDetail> projectDetail = fetchProjectDetail(project.id);
-
       list.add(Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         SizedBox(
           height: 10.0,
         ),
         InkWell(
           child: Text(
-            '${project.id}: ${project.name}',
+            '${project.name} (${project.id})',
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'Raleway',
@@ -69,12 +93,14 @@ class ProjectListState extends State<ProjectList> {
           ),
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => TrackerList(
-                        context: context,
-                        projectID: project.id,
-                        projectName: project.name)));
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => TrackerList(
+                    context: context,
+                    projectID: project.id,
+                    projectName: project.name),
+              ),
+            );
           },
         ),
         FutureBuilder<ProjectDetail>(
@@ -82,11 +108,11 @@ class ProjectListState extends State<ProjectList> {
           builder: (context, snapshot) {
             if (snapshot.hasError) print(snapshot.error);
             return snapshot.hasData
-                ? Text(snapshot.data.description,
+                ? Text(snapshot.data.description.truncateTo(79),
                     style: TextStyle(
                       color: Colors.grey,
                       fontFamily: 'Raleway',
-                      fontSize: 10.0,
+                      fontSize: 15.0,
                       fontWeight: FontWeight.normal,
                     ))
                 : Center(child: CircularProgressIndicator());
