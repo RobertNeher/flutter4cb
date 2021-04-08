@@ -49,7 +49,7 @@ class WorkItemListState extends State<WorkItemList> {
             child: FutureBuilder<List<WorkItems>>(
                 future: workItems,
                 builder: (context, snapshot) {
-                  if (snaprshot.hasError) print(snapshot.error);
+                  if (snapshot.hasError) print(snapshot.error);
                   return snapshot.hasData
                       ? ListView(
                           children: workItemsList(context, snapshot.data))
