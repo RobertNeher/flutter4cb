@@ -31,45 +31,18 @@ class ProjectListState extends State<ProjectList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Raleway',
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: Text(
+            title,
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Raleway',
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: ListView.separated(
-        itemCount: widget.projects.length,
-        separatorBuilder: (context, index) {
-          return Divider();
-        },
-        itemBuilder: (context, index) {
-          return ListTile(
-              title: Text(
-                '${widget.projects[index].name} (${widget.projects[index].id})',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'Raleway',
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => TrackerList(
-                            context: context,
-                            projectID: widget.projects[index].id,
-                            projectName: widget.projects[index].name)));
-              });
-        },
-      ),
-    );
+        body: ListView(children: projectList(context, widget.projects)));
   }
 
   List<Widget> projectList(BuildContext context, List<Project> projects) {
@@ -77,31 +50,30 @@ class ProjectListState extends State<ProjectList> {
 
     projects.forEach((project) {
       Future<ProjectDetail> projectDetail = fetchProjectDetail(project.id);
-      list.add(Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        SizedBox(
-          height: 10.0,
-        ),
-        InkWell(
-          child: Text(
-            '${project.name} (${project.id})',
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: 'Raleway',
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => TrackerList(
-                    context: context,
-                    projectID: project.id,
-                    projectName: project.name),
+      list.add(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ListTile(
+          title: InkWell(
+            child: Text(
+              '${project.name} (${project.id})',
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Raleway',
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
               ),
-            );
-          },
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => TrackerList(
+                      context: context,
+                      projectID: project.id,
+                      projectName: project.name),
+                ),
+              );
+            },
+          ),
         ),
         FutureBuilder<ProjectDetail>(
           future: projectDetail,
