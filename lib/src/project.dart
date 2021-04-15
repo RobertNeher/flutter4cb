@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'configuration.dart';
+import 'helper.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main(List<String> args) async {
@@ -15,10 +16,8 @@ Future<List<Project>> fetchProjects() async {
   List<Project> projects;
   Configuration config = Configuration();
 
-  final response = await http.get("${config.RESTBaseURL}/projects", headers: {
-    HttpHeaders.acceptHeader: "application/json",
-    HttpHeaders.authorizationHeader: config.getAuthToken(),
-  });
+  final response = await http.get(Uri.https(config.RESTBase, '/projects'),
+      headers: httpHeader());
 
   if (response.statusCode == 200) {
     List jsonRaw = jsonDecode(response.body);
@@ -34,10 +33,9 @@ Future<ProjectDetail> fetchProjectDetail(int projectID) async {
   Configuration config = Configuration();
 
   final response =
-      await http.get("${config.RESTBaseURL}/projects/$projectID", headers: {
-    HttpHeaders.acceptHeader: "application/json",
-    HttpHeaders.authorizationHeader: config.getAuthToken()
-  });
+      await http.get(
+      Uri.https(config.RESTBase, '/projects/$projectID'),
+      headers: httpHeader());
 
   if (response.statusCode == 200) {
     Map json = jsonDecode(response.body);

@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter4cb/src/helper.dart';
+
 import 'configuration.dart';
 import 'package:http/http.dart' as http;
 
 void main(List<String> args) {
-  print(fetchProjectTrackers(int.parse(args[0])).then((value) => value.forEach((element) {
-        if (element is Tracker) {
-          print(element.name);
-        }
-      })));
+  print(fetchProjectTrackers(int.parse(args[0]))
+      .then((value) => value.forEach((element) {
+            if (element is Tracker) {
+              print(element.name);
+            }
+          })));
 }
 
 Future<List<Tracker>> fetchProjectTrackers(int projectID) async {
@@ -16,10 +19,9 @@ Future<List<Tracker>> fetchProjectTrackers(int projectID) async {
   List<Tracker> trackers;
 
   final response = await http
-      .get("${config.RESTBaseURL}/projects/$projectID/trackers", headers: {
-    HttpHeaders.acceptHeader: "application/json",
-    HttpHeaders.authorizationHeader: config.getAuthToken()
-  });
+      .get(
+      Uri.https(config.RESTBase, '/projects/$projectID/trackers'),
+      headers: httpHeader());
 
   if (response.statusCode == 200) {
     List jsonRaw = jsonDecode(response.body);
@@ -53,7 +55,7 @@ class Tracker {
   }
 }
 
-class TrackerItem {
+class TrackerDetail {
   int id;
   String name;
   String description;
@@ -92,48 +94,47 @@ class TrackerItem {
   String typeName;
   // List<Comments> comments;
 
-  TrackerItem(
-      {this.id,
-      this.name,
-      this.description,
-      this.descriptionFormat,
-      this.createdAt,
-      this.createdBy,
-      this.modifiedAt,
-      this.modifiedBy,
-      this.parent,
-      // this.owners,
-      this.version,
-      this.assignedAt,
-      // this.assignedTo,
-      this.startDate,
-      this.endDate,
-      this.closedAt,
-      this.storyPoints,
-      this.tracker,
-      // this.children,
-      this.customFields,
-      this.priority,
-      this.accruedMillis,
-      this.estimatedMillis,
-      this.spentMillis,
-      this.status,
-      // this.platforms,
-      // this.categories,
-      // this.subjects,
-      // this.resolutions,
-      // this.severities,
-      this.releaseMethod,
-      // this.teams,
-      // this.areas,
-      // this.versions,
-      this.ordinal,
-      this.typeName,
-      // this.comments
-    });
+  TrackerDetail({
+    this.id,
+    this.name,
+    this.description,
+    this.descriptionFormat,
+    this.createdAt,
+    this.createdBy,
+    this.modifiedAt,
+    this.modifiedBy,
+    this.parent,
+    // this.owners,
+    this.version,
+    this.assignedAt,
+    // this.assignedTo,
+    this.startDate,
+    this.endDate,
+    this.closedAt,
+    this.storyPoints,
+    this.tracker,
+    // this.children,
+    this.customFields,
+    this.priority,
+    this.accruedMillis,
+    this.estimatedMillis,
+    this.spentMillis,
+    this.status,
+    // this.platforms,
+    // this.categories,
+    // this.subjects,
+    // this.resolutions,
+    // this.severities,
+    this.releaseMethod,
+    // this.teams,
+    // this.areas,
+    // this.versions,
+    this.ordinal,
+    this.typeName,
+    // this.comments
+  });
 
-
-  TrackerItem.fromJson(Map<String, dynamic> json) {
+  TrackerDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     description = json['description'];
@@ -176,7 +177,7 @@ class TrackerItem {
     //   });
     // }
     if (json['customFields'] != null) {
-      customFields = new List<CustomFields>();
+      customFields = <CustomFields>[];
       json['customFields'].forEach((v) {
         customFields.add(new CustomFields.fromJson(v));
       });
@@ -250,7 +251,7 @@ class TrackerItem {
     // }
   }
 
-  Map<String, dynamic> toJson() {
+  TrackerDetail.toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
@@ -329,7 +330,6 @@ class TrackerItem {
     // if (this.comments != null) {
     //   data['comments'] = this.comments.map((v) => v.toJson()).toList();
     // }
-    return data;
   }
 }
 

@@ -19,7 +19,7 @@ class ProjectListState extends State<ProjectList> {
 
   @override
   void initState() {
-    title = 'Projects on codebeamer server "${config.RESTBaseURL}"';
+    title = 'Projects on codebeamer server "${config.RESTBase}"';
     super.initState();
   }
 

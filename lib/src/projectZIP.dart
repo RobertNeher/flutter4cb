@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'project.dart';
 import 'configuration.dart';
-
+import 'helper.dart';
 class ProjectZIP {
   String password;
   bool skipTrackerItems;
@@ -53,10 +53,9 @@ Future<ProjectDetail> export(int projectID) async {
   Configuration config = Configuration();
 
   final response =
-      await http.get("${config.RESTBaseURL}/projects/$projectID", headers: {
-    HttpHeaders.acceptHeader: "application/json",
-    HttpHeaders.authorizationHeader: config.getAuthToken()
-  });
+      await http.get(
+      Uri.https(config.RESTBase, '/projects/$projectID'),
+      headers: httpHeader());
 
   if (response.statusCode == 200) {
     Map json = jsonDecode(response.body);

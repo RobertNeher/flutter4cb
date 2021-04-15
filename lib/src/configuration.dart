@@ -1,19 +1,19 @@
 import "dart:convert";
 
 class Configuration {
-  static String _cbREST_BASE_URL;
+  static String _cbREST_BASE;
   static String _REST_User = 'ROBNEH01';
   static String _REST_Password = 'INfLuxTeREST';
   // static String _REST_User = 'bond';
   // static String _REST_Password = '007';
 
   Configuration() {
-    _cbREST_BASE_URL = r'https://codebeamer.b-h-c.de/api/v3';
-    // _cbREST_BASE_URL = r'http://localhost:8080/api/v3';
+    _cbREST_BASE = 'codebeamer.b-h-c.de';
+    // _cbREST_BASE = r'localhost:8080';
   }
 
-  String get RESTBaseURL {
-    return _cbREST_BASE_URL;
+  String get RESTBase {
+    return _cbREST_BASE;
   }
 
   String get REST_User {
