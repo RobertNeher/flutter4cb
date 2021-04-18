@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter4cb/src/helper.dart';
 
 import 'configuration.dart';
 import 'package:http/http.dart' as http;
 
 void main(List<String> args) async {
-  var workItems = await fetchWorkItems(int.parse(args[0]), 1);
+  var workItems = await fetchWorkItems(int.parse(args[0]));
   workItems.forEach((page) {
     print('${page.page} (${page.pageSize}/${page.total}:');
     page.workItems.forEach((workItem) {
@@ -18,25 +17,24 @@ void main(List<String> args) async {
 Future<List<WorkItems>> fetchWorkItems(int trackerID) async {
   Configuration config = Configuration();
   List<WorkItems> workItems = <WorkItems>[];
-  final maxPageSize = 500;
+  List<WorkItem> allWorkItems = <WorkItem>[];
   int pageNr = 0;
+  final maxPageSize = 500;
 
   while (true) {
-    List<WorkItem> pageWorkItems = <WorkItem>[];
     pageNr++;
-    final response = await http.get(
-        Uri.http(config.RESTBase, '/trackers/$trackerID/items',
+
+    var response = await http.get(
+        Uri.https(config.RESTBase, '/api/v3/trackers/$trackerID/items',
             {'page': pageNr, 'pageSize': maxPageSize}),
         headers: httpHeader());
 
     if (response.statusCode == 200) {
-      var jsonRaw = jsonDecode(response.body);
-      pageWorkItems = WorkItems.fromJson(jsonRaw));
+      return (jsonDecode(response.body));
     } else
       print("Error ${response.statusCode}");
-    }
+    return null;
   }
-  return workItems;
 }
 
 class WorkItem {

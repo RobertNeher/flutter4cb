@@ -8,15 +8,18 @@ Future<void> main(List<String> args) async {
   ProjectDetail pd;
 
   await fetchProjects().then((value) => value.forEach((element) async {
-        await fetchProjectDetail(element.id).then((value) => pd = value);
+        await fetchProjectDetail(element.id).then((detail) => pd = detail);
+        print('${element.name}: ${pd.description}');
+
       }));
+  return pd;
 }
 
 Future<List<Project>> fetchProjects() async {
   List<Project> projects;
   Configuration config = Configuration();
 
-  final response = await http.get(Uri.https(config.RESTBase, '/projects'),
+  final response = await http.get(Uri.http(config.RESTBase, '/api/v3/projects'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
@@ -32,9 +35,8 @@ Future<List<Project>> fetchProjects() async {
 Future<ProjectDetail> fetchProjectDetail(int projectID) async {
   Configuration config = Configuration();
 
-  final response =
-      await http.get(
-      Uri.https(config.RESTBase, '/projects/$projectID'),
+  final response = await http.get(
+      Uri.http(config.RESTBase, '/api/v3/projects/$projectID'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {

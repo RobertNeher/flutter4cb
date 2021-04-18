@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'work item.dart';
+import 'work_item.dart';
 import 'configuration.dart';
 
 class WorkItemList extends StatefulWidget {
