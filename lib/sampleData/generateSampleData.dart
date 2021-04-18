@@ -43,7 +43,7 @@ void generateData(
     );
 
     if (response.statusCode == 200) {
-      print(jsonDecode(response.body)['id']);
+      print(jsonDecode(response.body)['id'].toString() + ':' + i.toString());
     } else {
       print('${response.statusCode}: ${response.reasonPhrase}');
     }
