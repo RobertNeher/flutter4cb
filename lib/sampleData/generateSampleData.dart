@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../src/configuration.dart';
+import '../src/helper.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
@@ -20,12 +21,6 @@ void generateData(
   Configuration config = Configuration();
   String url = "${config.RESTBase}";
   String path = '/api/v3/trackers/$trackerID/items';
-  Map<String, String> headers = {
-    'accept': 'application/json',
-    'content-type': 'application/json',
-    'authorization': '${config.getAuthToken()}',
-    'charset': 'utf8',
-  };
   Map<String, dynamic> json = {};
 
   for (int i = startNo; i < amount; i++) {
@@ -39,7 +34,7 @@ void generateData(
     var response = await http.post(
       Uri.https(url, path),
       body: jsonEncode(json),
-      headers: headers,
+      headers: httpHeader(),
     );
 
     if (response.statusCode == 200) {
