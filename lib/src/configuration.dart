@@ -7,9 +7,32 @@ class Configuration {
   // static String _REST_User = 'bond';
   // static String _REST_Password = '007';
 
-  Configuration() {
-    _cbREST_BASE = 'codebeamer.b-h-c.de';
-    // _cbREST_BASE = r'localhost:8080';
+  static int _documentationProjectID = 7;
+
+  static Map<String, int> _trackers = {
+    'Project': 11739,
+    'Tracker': 11421,
+    'Field': 11507,
+    'Option': 11593,
+    'Status': 11665,
+  };
+
+  static Map<String, String> _baseURLs = {
+    'homeServer': 'codebeamer.b-h-c.de',
+    'documentationServer': 'codebeamer.b-h-c.de',
+  };
+
+
+  Map<String, String> get baseURLs {
+    return _baseURLs;
+  }
+
+  int get documentationProjectID {
+    return -documentationProjectID;
+  }
+
+  Map<String, int> get docTrackers {
+    return _trackers;
   }
 
   String get RESTBase {
