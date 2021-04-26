@@ -5,20 +5,60 @@ import 'package:http/http.dart' as http;
 
 Future<void> main(List<String> args) async {
   ProjectDetail pd;
+  Project found = await lookupProjectName(args[0]);
+  List<Project> projects = await fetchProjects();
 
-  await fetchProjects().then((value) => value.forEach((element) async {
-        await fetchProjectDetail(element.id).then((detail) => pd = detail);
-        print('${element.name}: ${pd.description}');
+  print('Project "${args[0]}" found: ${found.projectID}');
+  // projects.forEach((project) async {
+  //   pd = await fetchProjectDetail(project.id);
+  //   print('${project.name} (${project.id}): ${pd.description}');
+  // });
+  // return pd;
+}
 
-      }));
-  return pd;
+Future<Project> lookupProjectName(String name) async {
+  Configuration config = Configuration();
+  http.Response response;
+
+  String docServer = config.baseURLs['documentationServer'];
+  String path = '/api/v3/items/query';
+
+  try {
+    response = await http.get(
+        Uri.https(docServer, path, {
+          'page': '1',
+          'pageSize': '25',
+          'queryString':
+              'project.id in (${config.documentationProjectID}) AND summary=\'$name\'',
+        }),
+        headers: httpHeader());
+  } catch (e, stackTrace) {
+    return null;
+  }
+  if (response.statusCode == 200) {
+    Map<String, dynamic> result = jsonDecode(response.body);
+
+    if (result.length == 4 && result['total'] >= 1) {
+      Map<String, dynamic> item = result['items'][0];
+      return Project.fromJson({
+        'id': item['id'],
+        'projectID': item['customFields'][0]['value'],
+        'name': item['name'],
+        'description': item['description'],
+      });
+    } else {
+      return null;
+    }
+  }
+  return null;
 }
 
 Future<List<Project>> fetchProjects() async {
   List<Project> projects;
   Configuration config = Configuration();
 
-  final response = await http.get(Uri.http(config.RESTBase, '/api/v3/projects'),
+  final response = await http.get(
+      Uri.https(config.baseURLs['homeServer'], '/api/v3/projects'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
@@ -35,7 +75,7 @@ Future<ProjectDetail> fetchProjectDetail(int projectID) async {
   Configuration config = Configuration();
 
   final response = await http.get(
-      Uri.http(config.RESTBase, '/api/v3/projects/$projectID'),
+      Uri.http(config.baseURLs['homeServer'], '/api/v3/projects/$projectID'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
@@ -148,16 +188,28 @@ class CreatedBy {
 
 class Project {
   final int id;
+  final int projectID;
   final String name;
   final String type;
+  final String description;
 
-  Project({this.id, this.name, this.type});
+  Project({this.id, this.projectID, this.name, this.type, this.description});
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
-      id: json['id'],
-      name: json['name'],
-      type: json['type'],
-    );
+        id: json['id'],
+        projectID: json['projectID'],
+        name: json['name'],
+        type: json['type'],
+        description: '');
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['projectID'] = this.projectID;
+    data['name'] = this.name;
+    data['type'] = this.type;
+    data['description'] = this.description;
   }
 }

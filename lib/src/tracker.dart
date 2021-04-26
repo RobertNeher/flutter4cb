@@ -1,56 +1,92 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter4cb/src/helper.dart';
-
 import 'configuration.dart';
 import 'package:http/http.dart' as http;
 
-void main(List<String> args) {
-  print(fetchProjectTrackers(int.parse(args[0]))
-      .then((value) => value.forEach((element) {
-            if (element is Tracker) {
-              print(element.name);
-            }
-          })));
+void main(List<String> args) async {
+  List<Tracker> trackers = await fetchProjectTrackers(int.parse(args[0]));
+
+  trackers.forEach((tracker) {
+    print(tracker.name);
+  });
 }
 
 Future<List<Tracker>> fetchProjectTrackers(int projectID) async {
   Configuration config = Configuration();
   List<Tracker> trackers;
+  String homeServer = config.baseURLs['homeServer'];
+  String path = '/api/v3/projects/$projectID/trackers';
 
-  final response = await http
-      .get(
-      Uri.https(config.RESTBase, '/projects/$projectID/trackers'),
-      headers: httpHeader());
+  try {
+    final response =
+        await http.get(Uri.https(homeServer, path), headers: httpHeader());
+    if (response.statusCode == 200) {
+      List trackerList = jsonDecode(response.body);
 
-  if (response.statusCode == 200) {
-    List jsonRaw = jsonDecode(response.body);
-
-    trackers = jsonRaw.map((item) => Tracker.fromJson(item)).toList();
-  } else
-    print("Error ${response.statusCode}");
-
+      trackers = trackerList.map((item) => Tracker.fromJson(item)).toList();
+    } else
+      print("Error ${response.statusCode}");
+  } catch (e) {
+    print('Error: $e');
+  }
   return trackers;
+}
+
+Future<Tracker> lookupTrackerName(String name) async {
+  Configuration config = Configuration();
+  http.Response response;
+
+  String docServer = config.baseURLs['documentationServer'];
+  String path = '/api/v3/items/query';
+
+  try {
+    response = await http.get(
+        Uri.https(docServer, path, {
+          'page': '1',
+          'pageSize': '25',
+          'queryString':
+              'project.id in (${config.documentationProjectID}) AND summary=\'$name\'',
+        }),
+        headers: httpHeader());
+  } catch (e, stackTrace) {
+    return null;
+  }
+  if (response.statusCode == 200) {
+    print(response.body);
+    Map<String, dynamic> result = jsonDecode(response.body);
+
+    if (result.length == 4 && result['total'] >= 1) {
+      return Tracker.fromJson(result['items'][0]);
+    } else {
+      return null;
+    }
+  }
+  return null;
 }
 
 class Tracker {
   int id;
+  int trackerID;
   String name;
   String type;
+  String description;
 
-  Tracker({this.id, this.name, this.type});
+  Tracker({this.trackerID, this.name, this.type, this.description});
 
   Tracker.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    trackerID = json['trackerID'];
     name = json['name'];
     type = json['type'];
+    description = json['description'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['trackerID'] = this.trackerID;
     data['name'] = this.name;
     data['type'] = this.type;
+    data['description'] = this.description;
     return data;
   }
 }

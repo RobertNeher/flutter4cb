@@ -1,7 +1,6 @@
 import "dart:convert";
 
 class Configuration {
-  static String _cbREST_BASE;
   static String _REST_User = 'ROBNEH01';
   static String _REST_Password = 'INfLuxTeREST';
   // static String _REST_User = 'bond';
@@ -28,15 +27,11 @@ class Configuration {
   }
 
   int get documentationProjectID {
-    return -documentationProjectID;
+    return _documentationProjectID;
   }
 
   Map<String, int> get docTrackers {
     return _trackers;
-  }
-
-  String get RESTBase {
-    return _cbREST_BASE;
   }
 
   String get REST_User {
