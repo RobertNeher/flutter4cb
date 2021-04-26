@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../src/configuration.dart';
@@ -19,8 +17,6 @@ Future<int> documentProject(int projectID) async {
   Project project;
   ProjectDetail projDetail;
   Configuration config = Configuration();
-
-  int targetProject = config.documentationProjectID;
 
   String homeServer = config.baseURLs['homeServer'];
   String docServer = config.baseURLs['documentationServer'];

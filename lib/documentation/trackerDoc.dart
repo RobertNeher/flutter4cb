@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'dart:convert';
@@ -35,7 +33,7 @@ Future<int> documentTracker(int projectID, int trackerID) async {
     trackerData = {
       'trackerID': trackerID,
       'name': tracker.name,
-      'type': tracker.type.name,,
+      'type': tracker.type,
       'description': tracker.description,
     };
 

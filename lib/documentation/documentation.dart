@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'package:args/args.dart';
 import 'package:flutter4cb/documentation/projectDoc.dart';
 import 'package:flutter4cb/documentation/trackerDoc.dart';
-import '../src/configuration.dart';
+// import '../src/configuration.dart';
 import '../src/project.dart';
 import '../src/tracker.dart';
 
 void main(List<String> args) async {
-  Configuration config = Configuration();
+  // Configuration config = Configuration();
 
   if (args.length != 1) {
     print('Usage:\nargs <Name of project to be documented>');
@@ -25,7 +24,6 @@ void main(List<String> args) async {
 
   if (project != null) {
     int result;
-    Tracker trackerItem;
     List<Tracker> trackers = await fetchProjectTrackers(project.projectID);
 
     trackers.forEach((tracker) async {

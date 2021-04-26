@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'project.dart';
 import 'configuration.dart';
@@ -54,7 +53,7 @@ Future<ProjectDetail> export(int projectID) async {
 
   final response =
       await http.get(
-      Uri.https(config.RESTBase, '/projects/$projectID'),
+      Uri.https(config.baseURLs['homeServer'], '/projects/$projectID'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
