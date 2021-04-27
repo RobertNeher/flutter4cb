@@ -5,17 +5,6 @@ import 'package:http/http.dart' as http;
 
 Future<void> main(List<String> args) async {
   ProjectDetail pd;
-<<<<<<< HEAD
-  List<Project> projects = await fetchProjects();
-
-  projects.sort((a, b) => b.name.compareTo(a.name));
-
-  projects.forEach((project) async {
-    await fetchProjectDetail(project.id).then((detail) => pd = detail);
-    print('${project.name} (${project.id}):\n${pd.description}');
-  });
-  return pd;
-=======
   // Project found = await lookupProjectName(args[0]);
   List<Project> projects = await fetchProjects();
 
@@ -61,7 +50,6 @@ Future<Project> lookupProjectName(String name) async {
     }
   }
   return null;
->>>>>>> 8fef17533b7bed93b9f110c650fd65090ac22b5f
 }
 
 Future<List<Project>> fetchProjects() async {
