@@ -16,8 +16,7 @@ void main(List<String> args) async {
 
 Future<List<WorkItems>> fetchWorkItems(int trackerID) async {
   Configuration config = Configuration();
-  List<WorkItems> workItems = <WorkItems>[];
-  List<WorkItem> allWorkItems = <WorkItem>[];
+
   int pageNr = 0;
   final maxPageSize = 500;
 
@@ -25,7 +24,7 @@ Future<List<WorkItems>> fetchWorkItems(int trackerID) async {
     pageNr++;
 
     var response = await http.get(
-        Uri.https(config.RESTBase, '/api/v3/trackers/$trackerID/items',
+        Uri.https(config.baseURLs['homeServer'], '/api/v3/trackers/$trackerID/items',
             {'page': pageNr, 'pageSize': maxPageSize}),
         headers: httpHeader());
 

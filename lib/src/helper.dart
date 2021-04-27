@@ -13,5 +13,6 @@ Map<String, String> httpHeader() {
     'content-type': 'application/json',
     'authorization': config.getAuthToken(),
     'charset': 'utf8',
+    'access-control-allow-origin': '*'
   };
 }

@@ -23,13 +23,14 @@ class Flutter4cB extends StatelessWidget {
 }
 
 class StartingPage extends StatelessWidget {
-  Future<List<Project>> projectsList = fetchProjects();
   final String title;
 
   StartingPage({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future<List<Project>> projectsList = fetchProjects();
+
     return Scaffold(
         appBar: AppBar(
           leading: Padding(
@@ -43,16 +44,20 @@ class StartingPage extends StatelessWidget {
               )),
           centerTitle: true,
         ),
-        body: Container(
-          child: FutureBuilder<List<Project>>(
+        body: FutureBuilder<List<Project>>(
             future: projectsList,
             builder: (context, snapshot) {
-              if (snapshot.hasError) print(snapshot.error);
-              return snapshot.hasData
-                  ? ProjectList(projects: snapshot.data)
-                  : Center(child: CircularProgressIndicator());
-            },
-          ),
-        ));
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+                } else  {
+                if (snapshot.hasError) {
+                  return Center(child: Text ('Error: ${snapshot.error}'));
+                } else {
+                  return ProjectList(projects: snapshot.data);
+                };
+              }
+            }
+          )
+        );
   }
 }
