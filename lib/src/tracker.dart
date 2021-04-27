@@ -6,8 +6,9 @@ import 'package:http/http.dart' as http;
 void main(List<String> args) async {
   List<Tracker> trackers = await fetchProjectTrackers(int.parse(args[0]));
 
-  trackers.forEach((tracker) {
-    print(tracker.name);
+  trackers.forEach((tracker) async {
+    Tracker result = await lookupTrackerName(tracker.name);
+    print('${tracker.name}: ${result != null}');
   });
 }
 
@@ -45,7 +46,7 @@ Future<Tracker> lookupTrackerName(String name) async {
           'page': '1',
           'pageSize': '25',
           'queryString':
-              'project.id in (${config.documentationProjectID}) AND summary=\'$name\'',
+              'tracker.id in (${config.docTrackers["Tracker"]}) AND summary=\'$name\'',
         }),
         headers: httpHeader());
   } catch (e, stackTrace) {
@@ -68,15 +69,16 @@ class Tracker {
   int id;
   int trackerID;
   String name;
-  String type;
+  // String type;
   String description;
 
-  Tracker({this.trackerID, this.name, this.type, this.description});
+  Tracker({this.id, this.trackerID, this.name, this.description});
 
   Tracker.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     trackerID = json['trackerID'];
     name = json['name'];
-    type = json['type'];
+    // type = json['type'];
     description = json['description'];
   }
 
@@ -85,7 +87,7 @@ class Tracker {
     data['id'] = this.id;
     data['trackerID'] = this.trackerID;
     data['name'] = this.name;
-    data['type'] = this.type;
+    // data['type'] = this.type;
     data['description'] = this.description;
     return data;
   }

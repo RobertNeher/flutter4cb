@@ -19,23 +19,24 @@ void main(List<String> args) async {
   Project project = await lookupProjectName(args[0]);
 
   if (project == null) {
-    await documentProject(project.projectID);
+    project = await documentProject(project.projectID);
   }
 
   if (project != null) {
-    int result;
+    Tracker result;
     List<Tracker> trackers = await fetchProjectTrackers(project.projectID);
 
-    trackers.forEach((tracker) async {
-      // trackerItem = await lookupTrackerName(tracker.name);
-      // print('${tracker.id}: ${tracker.name}');
-      // if (trackerItem.trackerID > 0) {
-      result = await documentTracker(project.projectID, tracker.id);
-      print(result);
-      // }
-    });
+    if (trackers != null) {
+      trackers.forEach((tracker) async {
+        Tracker item = await lookupTrackerName(tracker.name);
 
-    /*
+        if (item == null) {
+          result = await documentTracker(project, tracker);
+        }
+      }
+    );
+  }
+  /*
    * Get all fields of a tracker and post them in tracker "Field"
    * Options of a selecion field will be posted in tracker "Option"
    * Status will be posted to tracker "Status"

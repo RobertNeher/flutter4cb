@@ -7,11 +7,11 @@ import 'package:logging/logging.dart';
 import '../src/project.dart';
 
 void main(List<String> args) async {
-  int result = await documentProject(int.parse(args[0]));
-  print('...and the winner is $result');
+  Project result = await documentProject(int.parse(args[0]));
+  print('...and the winner is ${result.name}');
 }
 
-Future<int> documentProject(int projectID) async {
+Future<Project> documentProject(int projectID) async {
   final log = Logger('ProjectDoc');
 
   Project project;
@@ -48,13 +48,13 @@ Future<int> documentProject(int projectID) async {
     try {
       path = '/api/v3/trackers/${config.docTrackers["Project"]}/items';
       // print('path: $path');
-      response =
-          await http.post(Uri.https(docServer, path), headers: httpHeader(), body: jsonEncode(projectData));
+      response = await http.post(Uri.https(docServer, path),
+          headers: httpHeader(), body: jsonEncode(projectData));
       log.info('Project documentation data stored in documentation tracker');
     } catch (e, stackTrace) {
       log.severe('Error in fetching project details: $e', e, stackTrace);
-      return -1;
+      return null;
     }
   }
-  return project.projectID;
+  return project;
 }
