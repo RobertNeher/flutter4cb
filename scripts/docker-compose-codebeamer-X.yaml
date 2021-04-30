@@ -1,0 +1,113 @@
+# Copyright by Intland Software, https://www.intland.com
+#
+# All rights reserved.
+#
+# Please note that if you change this docker file, we do not take any responsibility and we are not liable for
+# any damage caused through use of this image, be it indirect, special, incidental
+# or consequential damages (including but not limited to damages for loss of business, loss of profits, interruption or the like).
+
+version: '2.1'
+
+services:
+  retina-db:
+    image: intland/mysql-utf8mb4:5.7.24
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+      - MYSQL_DATABASE=retina
+      - MYSQL_MAX_ALLOWED_PACKET=1024M
+      - MYSQL_INNODB_BUFFER_POOL_SIZE=1G
+      - MYSQL_INNODB_LOG_FILE_SIZE=256M
+      - MYSQL_INNODB_LOG_BUFFER_SIZE=256M
+    volumes:
+      - retina-db-data:/var/lib/mysql/data
+
+
+  retina-app:
+    image: intland/codebeamer-x:3.3
+    ports:
+      - 8888:8080
+    environment:
+      - WAIT_HOSTS=container-mysql:3306
+      - WAIT_HOSTS_TIMEOUT=120
+      - CB_REDIRECT_TO=/x
+      - CB_CONTEXT_PATH=cb
+      - CB_database_JDBC_Username=user
+      - CB_database_JDBC_Password=pass
+      - CB_database_JDBC_Driver=com.mysql.jdbc.Driver
+      - CB_database_JDBC_ConnectionURL=jdbc:mysql://container-mysql:3306/retina?autoReconnect=true&zeroDateTimeBehavior=convertToNull&emulateLocators=true&characterEncoding=UTF-8&useSSL=false
+      - CB_database_JDBC_Timeout=120
+      - CB_MAC_ADDRESS=<<YOUR MAC ADDRESS>>
+    volumes:
+      - /home/centos/retina/data/repository:/home/appuser/codebeamer/repository
+      - /home/centos/retina/data/logs:/home/appuser/codebeamer/logs
+    links:
+      - retina-db:container-mysql
+
+
+  retina-httpd:
+    image: intland/httpd:1.2
+    ports:
+      - 80:8887
+      - 443:8888
+    environment:
+      - WAIT_HOSTS=retina-app:8080
+      - WAIT_HOSTS_TIMEOUT=180
+    volumes:
+      - /home/centos/retina/cert/retina.example.net.cert:/home/appuser/certificates/pem/certificate-file.pem
+      - /home/centos/retina/cert/retina.example.net.key:/home/appuser/certificates/pem/certificate-key-file.pem
+#      - <PATH_TO_CERTIFICATE_CHAIN_IF_YOU_HAVE>:/home/appuser/certificates/pem/ca-bundle.crt
+    links:
+        - retina-app:codebeamer-app
+
+
+volumes:
+  retina-db-data:
+In case you want to use your existing MySQL database
+
+# Copyright by Intland Software, https://www.intland.com
+#
+# All rights reserved.
+#
+# Please note that if you change this docker file, we do not take any responsibility and we are not liable for
+# any damage caused through use of this image, be it indirect, special, incidental
+# or consequential damages (including but not limited to damages for loss of business, loss of profits, interruption or the like).
+
+
+version: '2.1'
+
+
+services:
+  retina-app:
+    image: intland/codebeamer-x:3.3
+    ports:
+      - 8888:8080
+    environment:
+      - WAIT_HOSTS=<DATABASE_SERVER_HOST>:<DATABASE_SERVER_PORT>
+      - WAIT_HOSTS_TIMEOUT=120
+      - CB_REDIRECT_TO=/x
+      - CB_CONTEXT_PATH=cb
+      - CB_database_JDBC_Username=<DATABASE_SERVER_USERNAME>
+      - CB_database_JDBC_Password=<DATABASE_SERVER_PASSWORD>
+      - CB_database_JDBC_Driver=com.mysql.jdbc.Driver
+      - CB_database_JDBC_ConnectionURL=jdbc:mysql://<DATABASE_SERVER_HOST>:<DATABASE_SERVER_PORT>/<SCHEMA>?autoReconnect=true&zeroDateTimeBehavior=convertToNull&emulateLocators=true&characterEncoding=UTF-8&useSSL=false
+      - CB_database_JDBC_Timeout=120
+      - CB_MAC_ADDRESS=<<YOUR MAC ADDRESS>>
+    volumes:
+      - /home/centos/retina/data/repository:/home/appuser/codebeamer/repository
+      - /home/centos/retina/data/logs:/home/appuser/codebeamer/logs
+
+  retina-httpd:
+    image: intland/httpd:1.2
+    ports:
+      - 80:8887
+      - 443:8888
+    environment:
+      - WAIT_HOSTS=retina-app:8080
+      - WAIT_HOSTS_TIMEOUT=180
+    volumes:
+      - /home/centos/retina/cert/retina.example.net.cert:/home/appuser/certificates/pem/certificate-file.pem
+      - /home/centos/retina/cert/retina.example.net.key:/home/appuser/certificates/pem/certificate-key-file.pem
+#      - <PATH_TO_CERTIFICATE_CHAIN_IF_YOU_HAVE>:/home/appuser/certificates/pem/ca-bundle.crt
+    links:
+        - retina-app:codebeamer-app
