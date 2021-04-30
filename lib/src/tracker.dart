@@ -26,7 +26,7 @@ Future<List<Tracker>> fetchProjectTrackers(int projectID) async {
 
       trackers = trackerList.map((item) => Tracker.fromJson(item)).toList();
     } else
-      print("Error ${response.statusCode}");
+      print("Error in retrieving project's trackers: ${response.statusCode}");
   } catch (e) {
     print('Error: $e');
   }
@@ -53,11 +53,12 @@ Future<Tracker> lookupTrackerName(String name) async {
     return null;
   }
   if (response.statusCode == 200) {
-    print(response.body);
     Map<String, dynamic> result = jsonDecode(response.body);
 
     if (result.length == 4 && result['total'] >= 1) {
-      return Tracker.fromJson(result['items'][0]);
+      Tracker value = Tracker.fromJson(result['items'][0]);
+      value.trackerID = result['items'][0]['customFields'][0]['value'];
+      return value;
     } else {
       return null;
     }

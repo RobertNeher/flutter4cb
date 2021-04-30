@@ -5,17 +5,17 @@ import 'package:http/http.dart' as http;
 
 Future<void> main(List<String> args) async {
   ProjectDetail pd;
-  // Project found = await lookupProjectName(args[0]);
+  Project found = await lookupProjectName(int.parse(args[0]));
   List<Project> projects = await fetchProjects();
 
-  // print('Project "${args[0]}" found: ${found.projectID}');
+  print('Project "$args[0]" found: ${found != null}');
   projects.forEach((project) async {
     pd = await fetchProjectDetail(project.id);
     print('${project.name} (${project.id}): ${pd.description}');
   });
 }
 
-Future<Project> lookupProjectName(String name) async {
+Future<Project> lookupProjectName(int projectID) async {
   Configuration config = Configuration();
   http.Response response;
 
@@ -23,13 +23,12 @@ Future<Project> lookupProjectName(String name) async {
   String path = '/api/v3/items/query';
 
   try {
+    String query =
+        'project.id in (${config.documentationProjectID}) AND tracker.id in (${config.docTrackers["Project"]}) and \'${config.docTrackers["Project"]}.customField[0]\' = \'$projectID\'';
+
     response = await http.get(
-        Uri.https(docServer, path, {
-          'page': '1',
-          'pageSize': '25',
-          'queryString':
-              'project.id in (${config.documentationProjectID}) AND summary=\'$name\'',
-        }),
+        Uri.https(docServer, path,
+            {'page': '1', 'pageSize': '25', 'queryString': query}),
         headers: httpHeader());
   } catch (e, stackTrace) {
     return null;
@@ -39,6 +38,7 @@ Future<Project> lookupProjectName(String name) async {
 
     if (result.length == 4 && result['total'] >= 1) {
       Map<String, dynamic> item = result['items'][0];
+
       return Project.fromJson({
         'id': item['id'],
         'projectID': item['customFields'][0]['value'],
@@ -210,5 +210,6 @@ class Project {
     data['name'] = this.name;
     data['type'] = this.type;
     data['description'] = this.description;
+    return data;
   }
 }

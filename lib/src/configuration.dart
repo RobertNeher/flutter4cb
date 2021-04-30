@@ -7,6 +7,7 @@ class Configuration {
   // static String _REST_Password = '007';
 
   static int _documentationProjectID = 7;
+  static int _associcationRole = 3; // "child"
 
   static Map<String, int> _trackers = {
     'Project': 11739,
@@ -21,9 +22,12 @@ class Configuration {
     'documentationServer': 'codebeamer.b-h-c.de',
   };
 
-
   Map<String, String> get baseURLs {
     return _baseURLs;
+  }
+
+  int get associationRole {
+    return _associcationRole;
   }
 
   int get documentationProjectID {

@@ -4,39 +4,49 @@ import 'package:flutter4cb/documentation/trackerDoc.dart';
 // import '../src/configuration.dart';
 import '../src/project.dart';
 import '../src/tracker.dart';
+import 'association.dart';
 
 void main(List<String> args) async {
   // Configuration config = Configuration();
 
   if (args.length != 1) {
-    print('Usage:\nargs <Name of project to be documented>');
+    print('Usage:\nargs <ID of project to be documented>');
     exit(-1);
   }
+  int projectID = int.parse(args[0]);
 
   /*
    * Get all trackers and post them in tracker "Tracker"
    */
-  Project project = await lookupProjectName(args[0]);
+  Project project = await lookupProjectName(projectID);
 
   if (project == null) {
-    project = await documentProject(project.projectID);
+    project = await documentProject(projectID);
   }
 
   if (project != null) {
-    Tracker result;
-    List<Tracker> trackers = await fetchProjectTrackers(project.projectID);
+    print('Project ${project.name} (${project.id}) processed');
+
+    List<Tracker> trackers = await fetchProjectTrackers(projectID);
 
     if (trackers != null) {
       trackers.forEach((tracker) async {
-        Tracker item = await lookupTrackerName(tracker.name);
+        Tracker trackerItem = await lookupTrackerName(tracker.name);
 
-        if (item == null) {
-          result = await documentTracker(project, tracker);
+        if (trackerItem == null) {
+          trackerItem = await documentTracker(project, tracker);
         }
-      }
-    );
-  }
-  /*
+        print(
+            'Tracker ${trackerItem.name} (${trackerItem.id}) processed: ${trackerItem.trackerID}');
+
+        bool result = await associate(tracker, trackerItem.trackerID, project);
+
+        print(result
+            ? 'Project ${project.name} is associated with ${tracker.name}'
+            : 'Association failed from project ${project.name} to ${tracker.name}');
+      });
+    }
+    /*
    * Get all fields of a tracker and post them in tracker "Field"
    * Options of a selecion field will be posted in tracker "Option"
    * Status will be posted to tracker "Status"

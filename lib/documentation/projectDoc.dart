@@ -2,7 +2,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../src/configuration.dart';
 import '../src/helper.dart';
-import 'package:logging/logging.dart';
 
 import '../src/project.dart';
 
@@ -12,8 +11,6 @@ void main(List<String> args) async {
 }
 
 Future<Project> documentProject(int projectID) async {
-  final log = Logger('ProjectDoc');
-
   Project project;
   ProjectDetail projDetail;
   Configuration config = Configuration();
@@ -27,32 +24,40 @@ Future<Project> documentProject(int projectID) async {
   try {
     response =
         await http.get(Uri.https(homeServer, path), headers: httpHeader());
-    log.info('Project data fetched');
   } catch (e, stackTrace) {
-    log.severe('Error in fetching project details: $e', e, stackTrace);
+    print('Error in fetching project details: $e: $stackTrace');
     return null;
   }
   if (response.statusCode == 200) {
     project = Project.fromJson(jsonDecode(response.body));
     projDetail = await fetchProjectDetail(project.id);
-    // print('get project: ${project.name}');
-    // print('get project detail: ${projDetail.name}');
-    log.info('Project detail fetched');
+
     projectData = {
       'id': project.id,
-      'projectID': projectID,
+      'customFields': [
+        {
+          'fieldId': 10000,
+          'name': 'projectID',
+          'title': 'Project ID',
+          'type': 'IntegerFieldValue',
+          'value': projectID,
+        }
+      ],
       'name': project.name,
       'description': projDetail.description,
     };
 
     try {
       path = '/api/v3/trackers/${config.docTrackers["Project"]}/items';
-      // print('path: $path');
+
       response = await http.post(Uri.https(docServer, path),
           headers: httpHeader(), body: jsonEncode(projectData));
-      log.info('Project documentation data stored in documentation tracker');
     } catch (e, stackTrace) {
-      log.severe('Error in fetching project details: $e', e, stackTrace);
+      print('Error in posting project data: $e: $stackTrace');
+      return null;
+    }
+    if (response.statusCode != 200) {
+      print('Project not posted: ${response.statusCode}');
       return null;
     }
   }

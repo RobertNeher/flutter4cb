@@ -78,8 +78,10 @@ class ProjectListState extends State<ProjectList> {
         FutureBuilder<ProjectDetail>(
           future: projectDetail,
           builder: (context, snapshot) {
-            if (snapshot.hasError) print(snapshot.error);
-            return snapshot.hasData
+            if (snapshot.hasError) {
+              return (Text(snapshot.error));
+            } else {
+              return snapshot.hasData
                 ? Text(snapshot.data.description.truncateTo(79),
                     style: TextStyle(
                       color: Colors.grey,
@@ -88,6 +90,7 @@ class ProjectListState extends State<ProjectList> {
                       fontWeight: FontWeight.normal,
                     ))
                 : Center(child: CircularProgressIndicator());
+            }
           },
         ),
       ]));
