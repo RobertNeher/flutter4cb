@@ -36,11 +36,9 @@ void main(List<String> args) async {
         if (trackerItem == null) {
           trackerItem = await documentTracker(project, tracker);
         }
-        print(
-            'Tracker ${trackerItem.name} (${trackerItem.id}) processed: ${trackerItem.trackerID}');
+        print('Tracker ${trackerItem.name} (${trackerItem.id}) processed');
 
-        bool result = await associate(tracker, trackerItem.trackerID, project);
-
+        bool result = await associate(trackerItem, project);
         print(result
             ? 'Project ${project.name} is associated with ${tracker.name}'
             : 'Association failed from project ${project.name} to ${tracker.name}');

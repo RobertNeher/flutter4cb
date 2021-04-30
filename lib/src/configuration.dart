@@ -7,7 +7,8 @@ class Configuration {
   // static String _REST_Password = '007';
 
   static int _documentationProjectID = 7;
-  static int _associcationRole = 3; // "child"
+  static int _associcationRole = 3;
+  static String _associcationName = 'child';
 
   static Map<String, int> _trackers = {
     'Project': 11739,
@@ -24,6 +25,10 @@ class Configuration {
 
   Map<String, String> get baseURLs {
     return _baseURLs;
+  }
+
+  String get associationName {
+    return _associcationName;
   }
 
   int get associationRole {

@@ -14,32 +14,27 @@ void main(List<String> args) async {
   Tracker tracker = await lookupTrackerName(trackerName);
   print(tracker.name);
 
-  associate(tracker, tracker.id, project);
+  associate(tracker, project);
   print('Done');
 }
 
-Future<bool> associate(Tracker from, int trackerID, Project to) async {
+Future<bool> associate(Tracker from, Project to) async {
   final Configuration config = Configuration();
   final String path = '/api/v3/associations';
   final String docServer = config.baseURLs['documentationServer'];
 
   final Map<String, dynamic> associationData = {
-    'from': {
-      'id': trackerID,
-      'name': from.name,
-      'type': 'TrackerItemReference'
-    },
+    'from': {'id': from.id, 'name': from.name, 'type': 'TrackerItemReference'},
     'to': {'id': to.id, 'name': to.name, 'type': 'TrackerItemReference'},
     'type': {
       'id': config.associationRole,
-      'name': 'child',
+      'name': config.associationName,
       'type': 'AssociationTypeReference'
     },
     'propagatingSuspects': false,
     'reversePropagation': false,
     'biDirectionalPropagation': false,
   };
-  print(associationData);
   http.Response response;
 
   try {
