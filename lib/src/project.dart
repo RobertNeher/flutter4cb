@@ -74,7 +74,7 @@ Future<ProjectDetail> fetchProjectDetail(int projectID) async {
   Configuration config = Configuration();
 
   final response = await http.get(
-      Uri.http(config.baseURLs['homeServer'], '/api/v3/projects/$projectID'),
+      Uri.https(config.baseURLs['homeServer'], '/api/v3/projects/$projectID'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {

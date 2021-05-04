@@ -14,18 +14,18 @@ void main(List<String> args) async {
   Tracker tracker = await lookupTrackerName(trackerName);
   print(tracker.name);
 
-  associate(tracker, project);
+  associate(tracker.id, project.id);
   print('Done');
 }
 
-Future<bool> associate(Tracker from, Project to) async {
+Future<bool> associate(int from, int to) async {
   final Configuration config = Configuration();
   final String path = '/api/v3/associations';
   final String docServer = config.baseURLs['documentationServer'];
 
   final Map<String, dynamic> associationData = {
-    'from': {'id': from.id, 'name': from.name, 'type': 'TrackerItemReference'},
-    'to': {'id': to.id, 'name': to.name, 'type': 'TrackerItemReference'},
+    'from': {'id': from, 'name': from, 'type': 'TrackerItemReference'},
+    'to': {'id': to, 'name': to, 'type': 'TrackerItemReference'},
     'type': {
       'id': config.associationRole,
       'name': config.associationName,
@@ -46,10 +46,14 @@ Future<bool> associate(Tracker from, Project to) async {
   }
   var result = jsonDecode(response.body);
 
-  if (response.statusCode != 200) {
-    print(
-        'Posting association failed with ${response.statusCode}\n${response.body}');
-    return false;
+  switch (response.statusCode) {
+    case 200: //new association established
+      return true;
+    case 400: // association exists already
+      return true;
+    default: {
+      print('Posting association failed with ${response.statusCode}\n${response.body}');
+      return false;
+    }
   }
-  return true;
 }

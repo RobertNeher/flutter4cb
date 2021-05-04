@@ -2,53 +2,166 @@ import 'dart:convert';
 import 'configuration.dart';
 import 'helper.dart';
 import 'package:http/http.dart' as http;
+import '../src/field.dart';
+import '../documentation/fieldDoc.dart';
 
 Future<void> main(List<String> args) async {
-  List<Field> fields = await fetchFields(int.parse(args[0], int.parse(args[1]));
+  Configuration config = Configuration();
+  int trackerID = int.parse(args[0]);
+  List<Field> fields = await fetchTrackerFields(trackerID);
 
+  if (fields != null) {
+    fields.forEach((field) async {
+      Field fieldItem = await lookupFieldName(config.docTrackers['Field'], field.name);
+      if (fieldItem != null) {
+          Field fieldItem = (await documentField(trackerID, field.id)) as Field;
+        print(
+            'Field ${fieldItem.name} (${fieldItem.type}) of tracker $trackerID is processed');
+      }
+    });
+  }
+
+  int i = 0;
   fields.forEach((field) async {
+    Field result;
+    FieldDetail fd = await fetchFieldDetail(trackerID, field.id);
     print(
-        '${field.name} (${field.id})is of type ${field.type}: ${field.description}');
+        '${i++}:${field.name} (${field.id}) is of type ${fd.type}: ${fd.description}');
+    result = await lookupFieldName(trackerID, field.name);
+    print('...${result != null}');
   });
 }
 
+Future<Field> lookupFieldName(int trackerID, String fieldName) async {
+  List<Field> fields = await fetchTrackerFields(trackerID);
 
-Future<List<Field>> fetchFields(int trackerID, int fieldID) async {
-  List<Field> fields;
+  fields.forEach((field) {
+    if (fieldName == field.name) return field;
+  });
+  return null;
+}
+
+Future<List<Field>> fetchTrackerFields(int trackerID) async {
+  http.Response response;
   Configuration config = Configuration();
+  String server = config.baseURLs['homeServer'];
+  String path = '/api/v3/trackers/$trackerID/fields';
+  int i = 0;
+  List<Field> fields;
 
-  final response = await http.get(
-      Uri.https(
-          config.baseURLs['homeServer'], '/api/v3/trackers/$trackerID/fields'),
-      headers: httpHeader());
+  try {
+    response = await http.get(Uri.https(server, path), headers: httpHeader());
+  }
+  catch (e, stackTrace) {
+    print('Error in fetching tracker fields: $e: $stackTrace');
+    return null;
+  }
+  if (response.statusCode != 200) {
+    print('Error in fetching tracker fields');
+    return null;
+  }
 
-  if (response.statusCode == 200) {
-    List jsonRaw = jsonDecode(response.body);
+  List fieldList = jsonDecode(response.body);
+  fields = fieldList.map((field) => Field.fromJson(field)).toList();
 
-    fields = jsonRaw.map((item) => Field.fromJson(item)).toList();
-  } else
-    print("Error ${response.statusCode}");
+  fields.forEach((field) async {
+    FieldDetail fd = await fetchFieldDetail(trackerID, field.id);
+
+    fields[i].description = fd.description;
+    fields[i].type = fd.type;
+    // fields[i].options = fd.options;
+    i++;
+  });
 
   return fields;
 }
 
 class Field {
   final int id;
+  final int fieldID;
+  final String name;
+  String type;
+  String description;
+  List<Option> options;
+
+  Field({
+    this.id,
+    this.fieldID,
+    this.name,
+    this.type,
+    this.description,
+    this.options,
+  });
+
+  factory Field.fromJson(Map<String, dynamic> json) {
+    return Field(
+      id: json['id'],
+      fieldID: json['fieldID'],
+      name: json['name'],
+      type: json['type'],
+      description: json['description'],
+      options: []
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['fieldID'] = this.fieldID;
+    data['name'] = this.name;
+    data['type'] = this.type;
+    data['description'] = this.description;
+    data['options'] = this.options;
+    return data;
+  }
+}
+
+Future<FieldDetail> fetchFieldDetail(int trackerID, int fieldID) async {
+  Configuration config = Configuration();
+  String path = '/api/v3/trackers/$trackerID/fields/$fieldID';
+  String server = config.baseURLs['homeServer'];
+
+  final response =
+      await http.get(Uri.https(server, path), headers: httpHeader());
+
+  if (response.statusCode != 200) {
+    print("Error fetching field detail: ${response.statusCode}");
+    return null;
+  }
+
+  List<Option> options;
+  Map json = jsonDecode(response.body);
+  String type = json['type'];
+  type = type.truncateTo(type.length - 'Field'.length);
+  json['type'] = type;
+
+  // if (type.startsWith('Option')) {
+  //   var optionList = json['options'] as List;
+  //   json['options'] =
+  //       optionList.map((option) => Option.fromJson(option)).toList();
+  // } else {
+  //   json['options'] = null;
+  // }
+  return FieldDetail.fromJson(json);
+}
+
+class FieldDetail {
+  final int id;
   final String name;
   final String type;
   final String description;
+  // List<Option> options;
 
-  Field({this.id, this.name, this.type, this.description});
+  FieldDetail({this.id, this.name, this.type, this.description, options});
 
-  factory Field.fromJson(Map<String, dynamic> json) {
-    switch json['type'] {
-      case 'IntegerField'
-    }
-    return Field(
-        id: json['id'],
-        name: json['name'],
-        type: json['type'],
-        description: json['description']);
+  factory FieldDetail.fromJson(Map<String, dynamic> json) {
+    return FieldDetail(
+      id: json['id'],
+      name: json['name'],
+      type: json['type'],
+      description: json['description'],
+      // options: null,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -57,10 +170,25 @@ class Field {
     data['name'] = this.name;
     data['type'] = this.type;
     data['description'] = this.description;
+    // data['options'] = this.options;
     return data;
   }
+}
 
-  String _evaluateType(String type) {
+class Option {
+  final int id;
+  final String name;
 
+  Option({this.id, this.name});
+
+  factory Option.fromJson(Map<String, dynamic> json) {
+    return Option(id: json['id'], name: json['name']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
   }
 }

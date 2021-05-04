@@ -49,3 +49,4 @@ app.*.map.json
 
 # codebeamer related
 /scripts/cb-data
+pubspec.lock

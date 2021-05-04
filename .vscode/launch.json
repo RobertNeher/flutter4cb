@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Start Documentation",
+            "type": "dart",
+            "request": "launch",
+            "program": "bin/main.dart",
+            "args": ["5"]
+        },
+        {
             "name": "Flutter 4 codeBeamer",
             "type": "dart",
             "request": "launch",
