@@ -5,8 +5,10 @@ import 'configuration.dart';
 import 'package:http/http.dart' as http;
 
 void main(List<String> args) async {
-  var workItems = await fetchWorkItems(int.parse(args[0]));
-  workItems.forEach((page) {
+  int trackerID = int.parse(args[0]);
+  List<WorkItemPage> workItemPages = await fetchWorkItemPages(trackerID);
+  print(workItemPages.length);
+  workItemPages.forEach((page) {
     print('${page.page} (${page.pageSize}/${page.total}:');
     page.workItems.forEach((workItem) {
       print('${workItem.name} (${workItem.id})');
@@ -14,26 +16,45 @@ void main(List<String> args) async {
   });
 }
 
-Future<List<WorkItems>> fetchWorkItems(int trackerID) async {
+Future<List<WorkItemPage>> fetchWorkItemPages(int trackerID) async {
   Configuration config = Configuration();
+  List<WorkItemPage> pages = <WorkItemPage>[];
+  WorkItemPage stats;
 
-  int pageNr = 0;
-  final maxPageSize = 500;
+  final int maxPageSize = 500;
+  int maxPages;
 
-  while (true) {
-    pageNr++;
+  var response = await http.get(
+      Uri.https(
+          config.baseURLs['homeServer'],
+          '/api/v3/trackers/$trackerID/items',
+          {'page': '1', 'pageSize': maxPageSize.toString()}),
+      headers: httpHeader());
 
-    var response = await http.get(
-        Uri.https(config.baseURLs['homeServer'], '/api/v3/trackers/$trackerID/items',
-            {'page': pageNr, 'pageSize': maxPageSize}),
+  if (response.statusCode == 200) {
+    stats = WorkItemPage.fromJson(jsonDecode(response.body));
+    maxPages = (stats.total / maxPageSize).round();
+  } else {
+    return null;
+  }
+  for (int pageNr = 1; pageNr < maxPages; pageNr++) {
+    response = await http.get(
+        Uri.https(
+            config.baseURLs['homeServer'],
+            '/api/v3/trackers/$trackerID/items',
+            {'page': pageNr.toString(), 'pageSize': maxPageSize.toString()}),
         headers: httpHeader());
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body));
-    } else
+      WorkItemPage pageItem = WorkItemPage.fromJson(jsonDecode(response.body));
+      pages.add(pageItem);
+      print(pages.length);
+    } else {
       print("Error ${response.statusCode}");
-    return null;
+      return null;
+    }
   }
+  return pages;
 }
 
 class WorkItem {
@@ -56,22 +77,18 @@ class WorkItem {
   }
 }
 
-class WorkItems {
+class WorkItemPage {
   int page;
   int pageSize;
   int total;
-
   List<WorkItem> workItems = <WorkItem>[];
 
-  WorkItems({this.page, this.pageSize, this.total, this.workItems});
+  WorkItemPage({this.page, this.pageSize, this.total, this.workItems});
 
-  WorkItems.fromJson(Map<String, dynamic> json) {
+  WorkItemPage.fromJson(Map<String, dynamic> json) {
     this.page = json['page'] as int;
     this.pageSize = json['pageSize'] as int;
     this.total = json['total'] as int;
-    // print(this.page);
-    // print(this.pageSize);
-    // print(this.total);
 
     if (json['itemRefs'] != null) {
       this.workItems = <WorkItem>[];
