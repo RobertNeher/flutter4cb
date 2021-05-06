@@ -24,8 +24,8 @@ Future<bool> associate(int from, int to) async {
   final String docServer = config.baseURLs['documentationServer'];
 
   final Map<String, dynamic> associationData = {
-    'from': {'id': from, 'name': from, 'type': 'TrackerItemReference'},
-    'to': {'id': to, 'name': to, 'type': 'TrackerItemReference'},
+    'from': {'id': from, 'type': 'TrackerItemReference'},
+    'to': {'id': to, 'type': 'TrackerItemReference'},
     'type': {
       'id': config.associationRole,
       'name': config.associationName,
@@ -44,16 +44,17 @@ Future<bool> associate(int from, int to) async {
     print('Error in setting association: $e\n$stackTrace');
     return false;
   }
-  var result = jsonDecode(response.body);
 
   switch (response.statusCode) {
     case 200: //new association established
       return true;
     case 400: // association exists already
       return true;
-    default: {
-      print('Posting association failed with ${response.statusCode}\n${response.body}');
-      return false;
-    }
+    default:
+      {
+        print(
+            'Posting association failed with ${response.statusCode}\n${response.body}');
+        return false;
+      }
   }
 }
