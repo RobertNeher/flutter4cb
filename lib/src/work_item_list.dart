@@ -30,7 +30,7 @@ class WorkItemListState extends State<WorkItemList> {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<WorkItems>> workItems = fetchWorkItems(widget.trackerID);
+    Future<List<WorkItemPage>> pages = fetchWorkItemPages(widget.trackerID);
 
     return Scaffold(
         appBar: AppBar(
@@ -46,8 +46,8 @@ class WorkItemListState extends State<WorkItemList> {
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
-            child: FutureBuilder<List<WorkItems>>(
-                future: workItems,
+            child: FutureBuilder<List<WorkItemPage>>(
+                future: pages,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) print(snapshot.error);
                   return snapshot.hasData
@@ -60,10 +60,10 @@ class WorkItemListState extends State<WorkItemList> {
   }
 }
 
-List<Widget> workItemsList(BuildContext context, List<WorkItems> workItems) {
+List<Widget> workItemsList(BuildContext context, List<WorkItemPage> pages) {
   List<ListTile> listTiles = <ListTile>[];
 
-  workItems.forEach((page) {
+  pages.forEach((page) {
     page.workItems.forEach((workItem) {
       listTiles.add(
         ListTile(

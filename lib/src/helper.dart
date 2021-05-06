@@ -12,7 +12,9 @@ Map<String, String> httpHeader() {
     'accept': 'application/json',
     'content-type': 'application/json',
     'authorization': config.getAuthToken(),
-    'charset': 'utf8',
-    // 'access-control-allow-origin': '*'
+    // 'charset': 'utf8',
+    // 'Access-control-allow-origin': '*',
+    // 'Access-Control-Allow-Headers': '*',
+    // 'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
   };
 }

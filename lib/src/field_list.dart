@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter4cb/src/field_list.dart';
-import 'tracker.dart';
-// import 'field_list.dart';
+import 'field.dart';
 import 'work_item_list.dart';
 import 'configuration.dart';
 
-class TrackerList extends StatefulWidget {
-  TrackerList({this.context, this.projectID, this.projectName}) : super();
+class FieldList extends StatefulWidget {
+  FieldList({this.context, this.trackerID, this.trackerName}) : super();
 
   final BuildContext context;
-  final int projectID;
-  final String projectName;
+  final int trackerID;
+  final String trackerName;
 
   @override
-  TrackerListState createState() => TrackerListState();
+  FieldListState createState() => FieldListState();
 }
 
-class TrackerListState extends State<TrackerList> {
+class FieldListState extends State<FieldList> {
   Configuration config = Configuration();
   String title = '';
 
   @override
   void initState() {
-    title = 'Tracker of project ${widget.projectName} (${widget.projectID})';
+    title = 'Fields of tracker ${widget.trackerName} (${widget.trackerID})';
     super.initState();
   }
 
@@ -33,7 +31,7 @@ class TrackerListState extends State<TrackerList> {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<Tracker>> trackers = fetchProjectTrackers(widget.projectID);
+    Future<List<Field>> fields = fetchTrackerFields(widget.trackerID);
 
     return Scaffold(
         appBar: AppBar(
@@ -49,8 +47,8 @@ class TrackerListState extends State<TrackerList> {
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
-            child: FutureBuilder<List<Tracker>>(
-                future: trackers,
+            child: FutureBuilder<List<Field>>(
+                future: fields,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) print(snapshot.error);
                   return snapshot.hasData
@@ -71,22 +69,12 @@ class TrackerListState extends State<TrackerList> {
                                   ),
                                 ),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            // WorkItemList(
-                                              //     context: context,
-                                              //     trackerID:
-                                              //         snapshot.data[index].id,
-                                              //     trackerName:
-                                              //         snapshot.data[index].name)),
-                                              FieldList(
-                                                  context: context,
-                                                  trackerID:
-                                                      snapshot.data[index].id,
-                                                  trackerName: snapshot
-                                                      .data[index].name)));
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (BuildContext context) =>
+                                  //           fieldList(context, snapshot.data)),
+                                  // );
                                 });
                           })
                       : Center(child: CircularProgressIndicator());
@@ -95,14 +83,14 @@ class TrackerListState extends State<TrackerList> {
         ]));
   }
 
-  Widget trackerList(BuildContext context, List<Tracker> trackers) {
+  Widget fieldList(BuildContext context, List<Field> fields) {
     Column list = Column();
 
-    trackers.forEach((tracker) {
+    fields.forEach((field) {
       list.children.add(
         InkWell(
           child: Text(
-            '${tracker.name} (${tracker.id})',
+            '${field.name} (${field.id}): ${field.type}',
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'Raleway',

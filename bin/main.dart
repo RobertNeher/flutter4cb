@@ -27,8 +27,6 @@ void main(List<String> args) async {
   }
 
   if (project != null) {
-    print('Project ${project.name} (${project.id}) processed');
-
     List<Tracker> trackers = await fetchProjectTrackers(projectID);
 
     if (trackers != null) {
@@ -38,37 +36,32 @@ void main(List<String> args) async {
         if (trackerItem == null) {
           trackerItem = await documentTracker(project, tracker);
         }
-        print('Tracker ${trackerItem.name} (${trackerItem.id}) processed');
 
         bool result = await associate(trackerItem.id, project.id);
-        print(result
-            ? 'Project "${project.name}" is associated with tracker "${tracker.name}"'
-            : 'Association failed from project ${project.name} to ${tracker.name}');
+        // print(result
+        //     ? 'Project "${project.name}" is associated with tracker "${tracker.name}"'
+        //     : 'Association failed from project ${project.name} to ${tracker.name}');
 
         List<Field> fields = await fetchTrackerFields(trackerItem.trackerID);
-
         if (fields != null) {
           fields.forEach((field) async {
-            print('${tracker.name}: ${field.id} ${field.name}');
+            bool fieldFound = await lookupFieldName(field.name);
 
-            Field fieldItem =
-                await lookupFieldName(config.docTrackers['Field'], field.name);
-
-            if (fieldItem == null) {
+            if (!fieldFound) {
               Field fieldItem =
-                  await documentField(trackerItem.trackerID, field.id);
+                  await documentField(trackerItem.trackerID, field.fieldID);
             }
-            print(
-                'Field ${fieldItem.name} (${fieldItem.type}) of tracker ${trackerItem.trackerID} is processed');
 
             bool result = await associate(trackerItem.id, field.id);
             print(result
-                ? 'Traacker "${tracker.name}" is associated with field "${field.name}"'
+                ? 'Tracker "${tracker.name}" is associated with field "${field.name}"'
                 : 'Association failed from tracker ${tracker.name} to ${field.name}');
-
           });
         }
+        print('Tracker ${trackerItem.name} (${trackerItem.id}) processed');
       });
     }
+    print('Project ${project.name} (${project.id}) processed');
   }
+  // Wartenb bis alle Requests terminiert sind (Wait 20)
 }
