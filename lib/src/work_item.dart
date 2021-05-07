@@ -48,7 +48,6 @@ Future<List<WorkItemPage>> fetchWorkItemPages(int trackerID) async {
     if (response.statusCode == 200) {
       WorkItemPage pageItem = WorkItemPage.fromJson(jsonDecode(response.body));
       pages.add(pageItem);
-      print(pages.length);
     } else {
       print("Error ${response.statusCode}");
       return null;
