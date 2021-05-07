@@ -12,7 +12,6 @@ Future<Tracker> documentTracker(Project project, Tracker tracker) async {
   String docServer = config.baseURLs['documentationServer'];
   String path = '/api/v3/trackers/${tracker.id}';
   http.Response response;
-  Tracker result;
   Map<String, dynamic> trackerData;
   int newItemID;
 

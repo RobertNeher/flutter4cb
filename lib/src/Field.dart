@@ -1,44 +1,50 @@
 import 'dart:convert';
+
 import 'configuration.dart';
 import 'helper.dart';
 import 'package:http/http.dart' as http;
 import '../src/field.dart';
 import '../documentation/fieldDoc.dart';
+import '../src/work_item.dart';
 
 Future<void> main(List<String> args) async {
   Configuration config = Configuration();
   int trackerID = int.parse(args[0]);
   List<Field> fields = await fetchTrackerFields(trackerID);
-
   if (fields != null) {
     fields.forEach((field) async {
-      Field fieldItem = await lookupFieldName(config.docTrackers['Field'], field.name);
-      if (fieldItem != null) {
-          Field fieldItem = (await documentField(trackerID, field.id)) as Field;
+      bool fieldFound = await lookupFieldName(field.name);
+      if (fieldFound) {
+        Field fieldItem = (await documentField(trackerID, field.id)) as Field;
         print(
             'Field ${fieldItem.name} (${fieldItem.type}) of tracker $trackerID is processed');
       }
     });
+    print('No fields found');
   }
 
-  int i = 0;
-  fields.forEach((field) async {
-    Field result;
-    FieldDetail fd = await fetchFieldDetail(trackerID, field.id);
-    print(
-        '${i++}:${field.name} (${field.id}) is of type ${fd.type}: ${fd.description}');
-    result = await lookupFieldName(trackerID, field.name);
-    print('...${result != null}');
-  });
+  // int i = 0;
+  // fields.forEach((field) async {
+  //   Field result;
+  //   FieldDetail fd = await fetchFieldDetail(trackerID, field.id);
+  //   print(
+  //       '${i++}:${field.name} (${field.id}) is of type ${fd.type}: ${fd.description}');
+  //   result = await lookupFieldName(docFields, field.name);
+  //   print('...${result != null}');
+  // });
 }
 
-Future<Field> lookupFieldName(int trackerID, String fieldName) async {
-  List<Field> fields = await fetchTrackerFields(trackerID);
+Future<bool> lookupFieldName(String fieldName) async {
+  Configuration config = Configuration();
+  List<WorkItemPage> docFields =
+      await fetchWorkItemPages(config.docTrackers['Field']);
 
-  fields.forEach((field) {
-    if (fieldName == field.name) return field;
+  docFields.forEach((page) {
+    page.workItems.forEach((workItem) {
+      if (workItem.name == fieldName) return true;
+    });
   });
-  return null;
+  return false;
 }
 
 Future<List<Field>> fetchTrackerFields(int trackerID) async {
@@ -51,8 +57,7 @@ Future<List<Field>> fetchTrackerFields(int trackerID) async {
 
   try {
     response = await http.get(Uri.https(server, path), headers: httpHeader());
-  }
-  catch (e, stackTrace) {
+  } catch (e, stackTrace) {
     print('Error in fetching tracker fields: $e: $stackTrace');
     return null;
   }
@@ -72,7 +77,6 @@ Future<List<Field>> fetchTrackerFields(int trackerID) async {
     // fields[i].options = fd.options;
     i++;
   });
-
   return fields;
 }
 
@@ -95,13 +99,12 @@ class Field {
 
   factory Field.fromJson(Map<String, dynamic> json) {
     return Field(
-      id: json['id'],
-      fieldID: json['fieldID'],
-      name: json['name'],
-      type: json['type'],
-      description: json['description'],
-      options: []
-    );
+        id: json['id'],
+        fieldID: json['fieldID'],
+        name: json['name'],
+        type: json['type'],
+        description: json['description'],
+        options: []);
   }
 
   Map<String, dynamic> toJson() {

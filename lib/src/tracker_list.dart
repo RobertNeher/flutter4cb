@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter4cb/src/field_list.dart';
 import 'tracker.dart';
-// import 'field_list.dart';
+import 'field_list.dart';
 import 'work_item_list.dart';
 import 'configuration.dart';
 
@@ -19,6 +19,7 @@ class TrackerList extends StatefulWidget {
 class TrackerListState extends State<TrackerList> {
   Configuration config = Configuration();
   String title = '';
+  List<bool> isSelected = [false, false]; //Field list otherwise
 
   @override
   void initState() {
@@ -48,6 +49,36 @@ class TrackerListState extends State<TrackerList> {
           centerTitle: true,
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          ToggleButtons(
+            children: <Widget>[
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.work),
+                    Text('Work Items', style: TextStyle(fontSize: 10.0))
+                  ]),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.settings_applications),
+                    Text('Fields', style: TextStyle(fontSize: 10.0))
+                  ]),
+            ],
+            onPressed: (int index) {
+              setState(() {
+                for (int buttonIndex = 0;
+                    buttonIndex < isSelected.length;
+                    buttonIndex++) {
+                  if (buttonIndex == index) {
+                    isSelected[buttonIndex] = true;
+                  } else {
+                    isSelected[buttonIndex] = false;
+                  }
+                }
+              });
+            },
+            isSelected: isSelected,
+          ),
           Expanded(
             child: FutureBuilder<List<Tracker>>(
                 future: trackers,
@@ -60,34 +91,52 @@ class TrackerListState extends State<TrackerList> {
                             return Divider();
                           },
                           itemBuilder: (context, index) {
-                            return ListTile(
-                                title: Text(
-                                  '${snapshot.data[index].name} (${snapshot.data[index].id})',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Raleway',
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
+                            if (isSelected[0]) {
+                              return ListTile(
+                                  title: Text(
+                                    '${snapshot.data[index].name} (${snapshot.data[index].id})',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Raleway',
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            // WorkItemList(
-                                              //     context: context,
-                                              //     trackerID:
-                                              //         snapshot.data[index].id,
-                                              //     trackerName:
-                                              //         snapshot.data[index].name)),
-                                              FieldList(
-                                                  context: context,
-                                                  trackerID:
-                                                      snapshot.data[index].id,
-                                                  trackerName: snapshot
-                                                      .data[index].name)));
-                                });
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                WorkItemList(
+                                                    context: context,
+                                                    trackerID:
+                                                        snapshot.data[index].id,
+                                                    trackerName: snapshot
+                                                        .data[index].name)));
+                                  });
+                            } else if (isSelected[1])
+                              return ListTile(
+                                  title: Text(
+                                    '${snapshot.data[index].name} (${snapshot.data[index].id})',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Raleway',
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                FieldList(
+                                                    context: context,
+                                                    trackerID:
+                                                        snapshot.data[index].id,
+                                                    trackerName: snapshot
+                                                        .data[index].name)));
+                                  });
                           })
                       : Center(child: CircularProgressIndicator());
                 }),
