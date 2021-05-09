@@ -15,7 +15,7 @@ class Flutter4cB extends StatelessWidget {
     return MaterialApp(
       title: appTitle,
       theme: ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.orange,
       ),
       home: StartingPage(title: appTitle),
     );
@@ -35,7 +35,7 @@ class StartingPage extends StatelessWidget {
         appBar: AppBar(
           leading: Padding(
               padding: const EdgeInsets.all(1.0),
-              child: Image.asset('images/VW.png')),
+              child: Image.asset('images/BHC.png')),
           title: Text(title,
               style: TextStyle(
                 fontFamily: 'Raleway',
@@ -49,15 +49,14 @@ class StartingPage extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
-              } else  {
-              if (snapshot.hasError) {
-                return Center(child: Text ('Error: ${snapshot.error}'));
               } else {
-                return ProjectList(projects: snapshot.data);
-              };
-            }
-          }
-          )
-        );
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  return ProjectList(projects: snapshot.data);
+                }
+                ;
+              }
+            }));
   }
 }

@@ -10,6 +10,7 @@ dependencies:
   http:
   flutter:
     sdk: flutter
+  lazy_data_table: ^0.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,27 @@
+import 'dart:collection';
 import "dart:convert";
 
 class Configuration {
   static String _REST_User = 'ROBNEH01';
   static String _REST_Password = 'INfLuxTeREST';
+  Map<String, int> _fieldTypes = Map<String, int>();
   // static String _REST_User = 'bond';
   // static String _REST_Password = '007';
+
+  Configuration() {
+    _fieldTypes.addAll({'Text': 0});
+    _fieldTypes.addAll({'Integer': 1});
+    _fieldTypes.addAll({'Decimal': 2});
+    _fieldTypes.addAll({'Color': 4});
+    _fieldTypes.addAll({'Duration': 5});
+    _fieldTypes.addAll({'Bool': 6});
+    _fieldTypes.addAll({'Language': 7});
+    _fieldTypes.addAll({'Country': 8});
+    _fieldTypes.addAll({'WikiText': 9});
+    _fieldTypes.addAll({'Url': 10});
+    _fieldTypes.addAll({'Date': 11});
+    _fieldTypes.addAll({'Table': 1000});
+  }
 
   static int _documentationProjectID = 7;
   static int _associcationRole = 3;
@@ -17,24 +34,6 @@ class Configuration {
     'Option': 11593,
     'Status': 11665,
   };
-
-  static List<Map<String, int>> _fieldTypes = [
-    {'Integer': 1},
-    {'String': 2},
-    {'Decimal': 3},
-    {'Date': 5},
-    {'Bool': 6},
-    {'Table': 7},
-    {'Language': 8},
-    {'Time': 9},
-    {'Color': 10},
-    {'Duration': 11},
-    {'Wiki': 12},
-    {'URL': 13},
-    {'Choice': 14},
-    {'Members': 15},
-    {'Reference': 16}
-  ];
 
   static Map<String, String> _baseURLs = {
     'homeServer': 'codebeamer.b-h-c.de',
@@ -61,7 +60,7 @@ class Configuration {
     return _trackers;
   }
 
-  List<Map<String, int>> get fieldTypes {
+  Map<String, int> get fieldTypes {
     return _fieldTypes;
   }
 
