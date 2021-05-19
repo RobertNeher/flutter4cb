@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'field.dart';
+import 'tableView.dart';
 import 'work_item_list.dart';
 import 'configuration.dart';
 
@@ -31,6 +32,15 @@ class FieldListState extends State<FieldList> {
 
   @override
   Widget build(BuildContext context) {
+    List<List<String>> data = [];
+    final List<String> headers = [
+      'ID',
+      'Name',
+      'Description',
+      'Type',
+      'Field ID'
+    ];
+    final Map<int, double> colWidths = {0: 50, 1: 150, 2: 300, 3: 150, 4: 75};
     Future<List<Field>> fields = fetchTrackerFields(widget.trackerID);
 
     return Scaffold(
@@ -47,39 +57,29 @@ class FieldListState extends State<FieldList> {
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
-            child: FutureBuilder<List<Field>>(
-                future: fields,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) print(snapshot.error);
-                  return snapshot.hasData
-                      ? ListView.separated(
-                          itemCount: snapshot.data.length,
-                          separatorBuilder: (context, index) {
-                            return Divider();
-                          },
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                                title: Text(
-                                  '${snapshot.data[index].name} (${snapshot.data[index].id})',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Raleway',
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (BuildContext context) =>
-                                  //           fieldList(context, snapshot.data)),
-                                  // );
-                                });
-                          })
-                      : Center(child: CircularProgressIndicator());
-                }),
-          )
+              child: FutureBuilder<List<Field>>(
+                  future: fields,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError)
+                      return Center(child: Text(snapshot.error));
+                    else if (snapshot.hasData) {
+                      snapshot.data.forEach((field) {
+                        data.add([
+                          field.id.toString(),
+                          field.name,
+                          field.description,
+                          field.type,
+                          field.fieldID.toString(),
+                        ]);
+                      });
+                      return tableView(
+                          context, data, headers, colWidths, 'Field');
+                    } else {
+                      return Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.orange));
+                    }
+                  }))
         ]));
   }
 

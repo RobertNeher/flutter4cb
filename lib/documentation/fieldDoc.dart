@@ -5,10 +5,9 @@ import '../src/helper.dart';
 import '../src/field.dart';
 
 void main(List<String> args) async {
-  Field result = await documentField(int.parse(args[0]), int.parse(args[1]));
-  if (result != null) {
-    print('...and the winner is ${result.name}');
-  }
+  // Field result = await documentField(int.parse(args[0]), int.parse(args[1]));
+  // if (result != null) {
+  //   print('...and the winner is ${result.name}');
 }
 
 Future<Field> documentField(int trackerID, int fieldID) async {
@@ -37,25 +36,22 @@ Future<Field> documentField(int trackerID, int fieldID) async {
         'Error in retrieving field details: ${response.statusCode}: ${response.body}');
     return null;
   }
+  print('ok?');
   field = Field.fromJson(jsonDecode(response.body));
   fieldData = {
-    // 'id': field.id,
-    'name': field.name,
-    'type': field.type,
-    'description:': field.description ??= '<not specified>',
     'category': [
       {
+        'id': config.fieldTypes[field.type],
         'name': field.type,
       }
     ],
-    // 'descriptionFormat': 'PlainText',
     'customFields': [
       {
         'fieldId': 10001,
         'name': 'fieldID',
         'title': 'Field ID',
         'type': 'IntegerFieldValue',
-        'value': field.id,
+        'value': field.id.toString(),
       }
       // {
       //   'fieldId': 1000000,
@@ -64,9 +60,10 @@ Future<Field> documentField(int trackerID, int fieldID) async {
       //   'type': 'TableFieldValue',
       //   'value': generateOptionTable(fieldDetail.options),
       // }
-    ]
+    ],
+    'name': field.name,
+    'description:': field.description ??= '<not specified>',
   };
-  // print(jsonEncode(fieldData));
   path = '/api/v3/trackers/${config.docTrackers["Field"]}/items';
 
   try {

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'configuration.dart';
 import 'helper.dart';
 import 'package:http/http.dart' as http;
-import '../src/field.dart';
 import '../documentation/fieldDoc.dart';
 import '../src/work_item.dart';
 
@@ -15,7 +14,7 @@ Future<void> main(List<String> args) async {
     fields.forEach((field) async {
       bool fieldFound = await lookupFieldName(field.name);
       if (fieldFound) {
-        Field fieldItem = (await documentField(trackerID, field.id)) as Field;
+        Field fieldItem = (await documentField(trackerID, field.id));
         print(
             'Field ${fieldItem.name} (${fieldItem.type}) of tracker $trackerID is processed');
       }
@@ -82,7 +81,7 @@ Future<List<Field>> fetchTrackerFields(int trackerID) async {
 
 class Field {
   final int id;
-  final int fieldID;
+  final String fieldID;
   final String name;
   String type;
   String description;

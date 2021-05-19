@@ -35,7 +35,9 @@ class StartingPage extends StatelessWidget {
         appBar: AppBar(
           leading: Padding(
               padding: const EdgeInsets.all(1.0),
-              child: Image.asset('images/BHC.png')),
+              child: Image.asset(
+                'images/BHC.png',
+              )),
           title: Text(title,
               style: TextStyle(
                 fontFamily: 'Raleway',
