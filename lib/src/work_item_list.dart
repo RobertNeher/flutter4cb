@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter4cb/src/tableView.dart';
 import 'work_item.dart';
 import 'configuration.dart';
 
@@ -19,7 +20,7 @@ class WorkItemListState extends State<WorkItemList> {
 
   @override
   void initState() {
-    title = 'Work items of tracker ${widget.trackerName} (${widget.trackerID}';
+    title = 'Work items of tracker ${widget.trackerName} (${widget.trackerID})';
     super.initState();
   }
 
@@ -30,6 +31,15 @@ class WorkItemListState extends State<WorkItemList> {
 
   @override
   Widget build(BuildContext context) {
+    List<List<String>> data = [];
+    final List<String> headers = [
+      'ID',
+      'Name',
+      'Description',
+      'Type',
+    ];
+    final Map<int, double> colWidths = {0: 50, 1: 150, 2: 300, 3: 150};
+
     Future<List<WorkItemPage>> pages = fetchWorkItemPages(widget.trackerID);
 
     return Scaffold(
@@ -37,7 +47,7 @@ class WorkItemListState extends State<WorkItemList> {
           title: Text(
             title,
             style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontFamily: 'Raleway',
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),
@@ -46,16 +56,30 @@ class WorkItemListState extends State<WorkItemList> {
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
-            child: FutureBuilder<List<WorkItemPage>>(
-                future: pages,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) print(snapshot.error);
-                  return snapshot.hasData
-                      ? ListView(
-                          children: workItemsList(context, snapshot.data))
-                      : Center(child: CircularProgressIndicator());
-                }),
-          )
+              child: FutureBuilder<List<WorkItemPage>>(
+                  future: pages,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError)
+                      return Center(child: Text(snapshot.error));
+                    else if (snapshot.hasData) {
+                      snapshot.data.forEach((page) {
+                        page.workItems.forEach((workItem) {
+                          data.add([
+                            workItem.id.toString(),
+                            workItem.name,
+                            workItem.description,
+                            workItem.type,
+                          ]);
+                        });
+                      });
+                      return tableView(
+                          context, data, headers, colWidths, 'WorkItem');
+                    } else {
+                      return Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.orange));
+                    }
+                  }))
         ]));
   }
 }

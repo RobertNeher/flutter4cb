@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter4cb/src/work_item_list.dart';
 import 'tableView.dart';
 import 'tracker.dart';
-import 'field_list.dart';
-import 'work_item_list.dart';
 import 'configuration.dart';
 
 class TrackerList extends StatefulWidget {
@@ -19,7 +18,7 @@ class TrackerList extends StatefulWidget {
 class TrackerListState extends State<TrackerList> {
   Configuration config = Configuration();
   String title = '';
-  List<bool> isSelected = [false, false]; //Field list otherwise
+  List<bool> isSelected = [true, false]; //Field list otherwise
 
   @override
   void initState() {
@@ -85,29 +84,33 @@ class TrackerListState extends State<TrackerList> {
               isSelected: isSelected,
             ),
             Expanded(
-                child: FutureBuilder<List<Tracker>>(
-                    future: trackers,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error);
-                      }
-                      if (snapshot.hasData) {
-                        snapshot.data.forEach((tracker) {
-                          data.add([
-                            tracker.id.toString(),
-                            tracker.name,
-                            tracker.description,
-                            tracker.trackerID.toString()
-                          ]);
-                        });
-                        return tableView(
-                            context, data, header, colWidths, 'Tracker');
-                      } else {
-                        return Center(
-                            child: CircularProgressIndicator(
-                                color: Colors.orange));
-                      }
-                    }))
+              child: FutureBuilder<List<Tracker>>(
+                  future: trackers,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text(snapshot.error);
+                    }
+                    if (snapshot.hasData) {
+                      snapshot.data.forEach((tracker) {
+                        data.add([
+                          tracker.id.toString(),
+                          tracker.name,
+                          tracker.description,
+                          tracker.trackerID.toString()
+                        ]);
+                      });
+                      return isSelected[0]
+                          ? tableView(
+                              context, data, header, colWidths, 'WorkItem')
+                          : tableView(
+                              context, data, header, colWidths, 'Field');
+                    } else {
+                      return Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.orange));
+                    }
+                  }),
+            )
           ],
         ));
   }

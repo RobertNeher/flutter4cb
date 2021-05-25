@@ -4,15 +4,15 @@ import 'helper.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main(List<String> args) async {
-  ProjectDetail pd;
-  Project found = await lookupProjectName(int.parse(args[0]));
-  List<Project> projects = await fetchProjects();
+  // ProjectDetail pd;
+  // Project found = await lookupProjectName(int.parse(args[0]));
+  // List<Project> projects = await fetchProjects();
 
-  print('Project "$args[0]" found: ${found != null}');
-  projects.forEach((project) async {
-    pd = await fetchProjectDetail(project.id);
-    print('${project.name} (${project.id}): ${pd.description}');
-  });
+  // print('Project "$args[0]" found: ${found != null}');
+  // projects.forEach((project) async {
+  //   pd = await fetchProjectDetail(project.id);
+  //   print('${project.name} (${project.id}): ${pd.description}');
+  // });
 }
 
 Future<Project> lookupProjectName(int projectID) async {
@@ -54,6 +54,7 @@ Future<Project> lookupProjectName(int projectID) async {
 
 Future<List<Project>> fetchProjects() async {
   List<Project> projects;
+  ProjectDetail pd;
   Configuration config = Configuration();
 
   final response = await http.get(
@@ -64,8 +65,26 @@ Future<List<Project>> fetchProjects() async {
     List jsonRaw = jsonDecode(response.body);
 
     projects = jsonRaw.map((item) => Project.fromJson(item)).toList();
-  } else
+
+    // projects.forEach((project) async {
+    //   pd = await fetchProjectDetail(project.id);
+    //   project.description = pd.description ?? ' ';
+    // });
+
+    return projects;
+  } else {
     print("Error ${response.statusCode}");
+    return null;
+  }
+}
+
+Future<List<Project>> fetchProjectsExtended() async {
+  List<Project> projects = await fetchProjects();
+
+  projects.forEach((project) async {
+    ProjectDetail pd = await fetchProjectDetail(project.id);
+    project.description = pd.description;
+  });
 
   return projects;
 }
@@ -190,7 +209,7 @@ class Project {
   final int projectID;
   final String name;
   final String type;
-  final String description;
+  String description;
 
   Project({this.id, this.projectID, this.name, this.type, this.description});
 
@@ -200,7 +219,7 @@ class Project {
         projectID: json['projectID'],
         name: json['name'],
         type: json['type'],
-        description: '');
+        description: json['description']);
   }
 
   Map<String, dynamic> toJson() {

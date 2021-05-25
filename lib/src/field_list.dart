@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'field.dart';
 import 'tableView.dart';
-import 'work_item_list.dart';
 import 'configuration.dart';
 
 class FieldList extends StatefulWidget {
@@ -48,7 +47,7 @@ class FieldListState extends State<FieldList> {
           title: Text(
             title,
             style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontFamily: 'Raleway',
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),

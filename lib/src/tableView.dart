@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lazy_data_table/lazy_data_table.dart';
 import 'tracker_list.dart';
+import 'work_item_list.dart';
+import 'field_list.dart';
 
 Widget tableView(BuildContext context, List<List<String>> data,
-    List<String> header, Map<int, double> colWidths, String type) {
-  if (data.length <= 1 || header.length <= 1)
-    return Center(child: Text('nothing to display'));
-
+    List<String> header, Map<int, double> colWidths, String type,
+    {bool listOfFields = false}) {
   return LazyDataTable(
-    rows: data.length - 1,
-    columns: header.length - 1,
+    rows: data.length,
+    columns: header.length,
     tableDimensions: LazyDataTableDimensions(
       customCellWidth: colWidths,
     ),
@@ -32,7 +32,6 @@ Widget tableView(BuildContext context, List<List<String>> data,
         fontSize: 15.0,
       ),
     )),
-    // leftHeaderBuilder: (i) => Center(child: SizedBox.shrink()),
     dataCellBuilder: (i, j) => Center(
         child: InkWell(
             child: Text(data[i][j] ?? ' '),
@@ -49,27 +48,38 @@ Widget tableView(BuildContext context, List<List<String>> data,
                             projectName: data[i][1]),
                       ),
                     );
+                    break;
                   }
-                  break;
-                case 'Tracker':
+                case 'WorkItem':
                   {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (BuildContext context) => TrackerList(
+                        builder: (BuildContext context) => WorkItemList(
                             context: context,
-                            projectID: int.parse(data[i][0]),
-                            projectName: data[i][1]),
+                            trackerID: int.parse(data[i][0]),
+                            trackerName: data[i][1]),
                       ),
                     );
+                    break;
                   }
-                  break;
                 case 'Field':
-                  {}
-                  break;
+                  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => FieldList(
+                            context: context,
+                            trackerID: int.parse(data[i][0]),
+                            trackerName: data[i][1]),
+                      ),
+                    );
+                    break;
+                  }
                 default:
-                  {}
-                  break;
+                  {
+                    break;
+                  }
               }
             })),
   );
