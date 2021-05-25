@@ -60,11 +60,16 @@ class WorkItem {
   int id;
   String name;
   String type;
+  String description;
 
-  WorkItem({this.id, this.name, this.type});
+  WorkItem({this.id, this.name, this.type, this.description});
 
   factory WorkItem.fromJson(Map<String, dynamic> json) {
-    return WorkItem(id: json['id'], name: json['name'], type: json['type']);
+    return WorkItem(
+        id: json['id'],
+        name: json['name'],
+        type: json['type'],
+        description: json['description']);
   }
 
   Map<String, dynamic> toJson() {
@@ -72,6 +77,7 @@ class WorkItem {
     data['id'] = this.id;
     data['name'] = this.name;
     data['type'] = this.type;
+    data['description'] = this.description;
     return data;
   }
 }
