@@ -5,14 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Start Documentation",
+            "name": "Start_Documentation",
             "type": "dart",
             "request": "launch",
+            "console": "terminal",
             "program": "bin/main.dart",
             "args": ["5"]
         },
         {
-            "name": "Flutter 4 codeBeamer",
+            "name": "Start_Documentation_of_Field",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/documentation/fieldDoc.dart",
+            "args": ["7394", "12"]
+        },
+        {
+            "name": "Start_Field_Search",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/src/field.dart",
+            "args": ["9734", "Status"]
+        },
+        {
+            "name": "Flutter_for_codeBeamer",
             "type": "dart",
             "request": "launch",
             "program": "lib/main.dart"

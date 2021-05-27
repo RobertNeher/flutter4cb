@@ -37,9 +37,8 @@ class FieldListState extends State<FieldList> {
       'Name',
       'Description',
       'Type',
-      'Field ID'
     ];
-    final Map<int, double> colWidths = {0: 50, 1: 150, 2: 300, 3: 150, 4: 75};
+    final Map<int, double> colWidths = {0: 50, 1: 150, 2: 300, 3: 150};
     Future<List<Field>> fields = fetchTrackerFields(widget.trackerID);
 
     return Scaffold(
@@ -68,7 +67,6 @@ class FieldListState extends State<FieldList> {
                           field.name,
                           field.description,
                           field.type,
-                          field.fieldID.toString(),
                         ]);
                       });
                       return tableView(

@@ -1,22 +1,22 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../src/configuration.dart';
-import '../src/helper.dart';
+import '../../lib/src/configuration.dart';
+import '../../lib/src/helper.dart';
 
-import '../src/project.dart';
+import '../../lib/src/project.dart';
 
 void main(List<String> args) async {
-  Project result = await documentProject(int.parse(args[0]));
+  Project result = await documentProject(int.parse(args[0])) as Project;
   print('...and the winner is ${result.name}');
 }
 
-Future<Project> documentProject(int projectID) async {
+Future<Project?> documentProject(int projectID) async {
   Project project;
   ProjectDetail projDetail;
   Configuration config = Configuration();
 
-  String homeServer = config.baseURLs['homeServer'];
-  String docServer = config.baseURLs['documentationServer'];
+  String homeServer = config.baseURLs['homeServer'] as String;
+  String docServer = config.baseURLs['documentationServer'] as String;
   String path = '/api/v3/projects/$projectID';
   http.Response response;
   Map<String, dynamic> projectData;

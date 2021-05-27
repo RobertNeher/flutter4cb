@@ -1,16 +1,13 @@
 import 'dart:io';
-import '../lib/documentation/fieldDoc.dart';
-import '../lib/documentation/projectDoc.dart';
-import '../lib/documentation/trackerDoc.dart';
-import '../lib/src/configuration.dart';
-import '../lib/src/field.dart';
-import '../lib/src/project.dart';
-import '../lib/src/tracker.dart';
-import '../lib/documentation/association.dart';
+import '../src/association.dart';
+import '../src/fieldDoc.dart';
+import '../src/projectDoc.dart';
+import '../src/trackerDoc.dart';
+import '../../lib/src/field.dart';
+import '../../lib/src/project.dart';
+import '../../lib/src/tracker.dart';
 
 void main(List<String> args) async {
-  Configuration config = Configuration();
-
   if (args.length != 1) {
     print('Usage:\nargs <ID of project to be documented>');
     exit(-1);
@@ -23,7 +20,7 @@ void main(List<String> args) async {
   Project project = await lookupProjectName(projectID);
 
   if (project == null) {
-    project = await documentProject(projectID);
+    project = await documentProject(projectID) as Project;
   }
 
   if (project != null) {
@@ -34,14 +31,14 @@ void main(List<String> args) async {
         Tracker trackerItem = await lookupTrackerName(tracker.name);
 
         if (trackerItem == null) {
-          trackerItem = await documentTracker(project, tracker);
+          trackerItem = await documentTracker(project, tracker) as Tracker;
         }
 
         bool result = await associate(trackerItem.id, project.id);
         // print(result
         //     ? 'Project "${project.name}" is associated with tracker "${tracker.name}"'
         //     : 'Association failed from project ${project.name} to ${tracker.name}');
-
+        print(trackerItem);
         List<Field> fields = await fetchTrackerFields(trackerItem.trackerID);
         if (fields != null) {
           fields.forEach((field) async {
@@ -49,7 +46,7 @@ void main(List<String> args) async {
 
             if (!fieldFound) {
               Field fieldItem =
-                  await documentField(trackerItem.trackerID, field.fieldID);
+                  await documentField(trackerItem.trackerID, field.id) as Field;
             }
 
             bool result = await associate(trackerItem.id, field.id);

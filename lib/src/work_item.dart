@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:flutter4cb/src/helper.dart';
+
+import 'helper.dart';
 
 import 'configuration.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +27,7 @@ Future<List<WorkItemPage>> fetchWorkItemPages(int trackerID) async {
 
   var response = await http.get(
       Uri.https(
-          config.baseURLs['homeServer'],
+          config.baseURLs['homeServer'] as String,
           '/api/v3/trackers/$trackerID/items',
           {'page': '1', 'pageSize': maxPageSize.toString()}),
       headers: httpHeader());
@@ -35,12 +36,12 @@ Future<List<WorkItemPage>> fetchWorkItemPages(int trackerID) async {
     stats = WorkItemPage.fromJson(jsonDecode(response.body));
     maxPages = (stats.total / maxPageSize).round();
   } else {
-    return null;
+    return [];
   }
   for (int pageNr = 1; pageNr < maxPages; pageNr++) {
     response = await http.get(
         Uri.https(
-            config.baseURLs['homeServer'],
+            config.baseURLs['homeServer'] as String,
             '/api/v3/trackers/$trackerID/items',
             {'page': pageNr.toString(), 'pageSize': maxPageSize.toString()}),
         headers: httpHeader());
@@ -50,19 +51,20 @@ Future<List<WorkItemPage>> fetchWorkItemPages(int trackerID) async {
       pages.add(pageItem);
     } else {
       print("Error ${response.statusCode}");
-      return null;
+      return [];
     }
   }
   return pages;
 }
 
 class WorkItem {
-  int id;
-  String name;
-  String type;
-  String description;
+  int id = 0;
+  String name = '';
+  String type = '';
+  String description = '';
 
-  WorkItem({this.id, this.name, this.type, this.description});
+  WorkItem(
+      {this.id = 0, this.name = '', this.type = '', this.description = ''});
 
   factory WorkItem.fromJson(Map<String, dynamic> json) {
     return WorkItem(
@@ -83,12 +85,16 @@ class WorkItem {
 }
 
 class WorkItemPage {
-  int page;
-  int pageSize;
-  int total;
+  int page = 0;
+  int pageSize = 0;
+  int total = 0;
   List<WorkItem> workItems = <WorkItem>[];
 
-  WorkItemPage({this.page, this.pageSize, this.total, this.workItems});
+  WorkItemPage(
+      {this.page = 0,
+      this.pageSize = 0,
+      this.total = 0,
+      this.workItems = const <WorkItem>[]});
 
   WorkItemPage.fromJson(Map<String, dynamic> json) {
     this.page = json['page'] as int;

@@ -1,15 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../src/configuration.dart';
-import '../src/project.dart';
-import '../src/helper.dart';
-import '../src/tracker.dart';
+import '../../lib/src/configuration.dart';
+import '../../lib/src/project.dart';
+import '../../lib/src/helper.dart';
+import '../../lib/src/tracker.dart';
 
-Future<Tracker> documentTracker(Project project, Tracker tracker) async {
+Future<Tracker?> documentTracker(Project project, Tracker tracker) async {
   Configuration config = Configuration();
 
-  String homeServer = config.baseURLs['homeServer'];
-  String docServer = config.baseURLs['documentationServer'];
+  String homeServer = config.baseURLs['homeServer'] as String;
+  String docServer = config.baseURLs['documentationServer'] as String;
   String path = '/api/v3/trackers/${tracker.id}';
   http.Response response;
   Map<String, dynamic> trackerData;
@@ -43,7 +43,7 @@ Future<Tracker> documentTracker(Project project, Tracker tracker) async {
       }
     ],
     'name': tracker.name,
-    'description': tracker.description ??= '<not specified>',
+    'description': tracker.description,
   };
 
   try {

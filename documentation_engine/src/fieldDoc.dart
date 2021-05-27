@@ -1,21 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../src/configuration.dart';
-import '../src/helper.dart';
-import '../src/field.dart';
+import '../../lib/src/configuration.dart';
+import '../../lib/src/helper.dart';
+import '../../lib/src/field.dart';
 
-void main(List<String> args) async {
-  // Field result = await documentField(int.parse(args[0]), int.parse(args[1]));
-  // if (result != null) {
-  //   print('...and the winner is ${result.name}');
-}
-
-Future<Field> documentField(int trackerID, int fieldID) async {
+Future<Field?> documentField(int trackerID, int fieldID) async {
   Field field;
   Configuration config = Configuration();
 
-  String homeServer = config.baseURLs['homeServer'];
-  String docServer = config.baseURLs['documentationServer'];
+  String homeServer = config.baseURLs['homeServer'] as String;
+  String docServer = config.baseURLs['documentationServer'] as String;
   String path = '/api/v3/trackers/$trackerID/fields/$fieldID';
   http.Response response;
   Map<String, dynamic> fieldData;
@@ -36,7 +30,6 @@ Future<Field> documentField(int trackerID, int fieldID) async {
         'Error in retrieving field details: ${response.statusCode}: ${response.body}');
     return null;
   }
-  print('ok?');
   field = Field.fromJson(jsonDecode(response.body));
   fieldData = {
     'category': [
@@ -62,7 +55,7 @@ Future<Field> documentField(int trackerID, int fieldID) async {
       // }
     ],
     'name': field.name,
-    'description:': field.description ??= '<not specified>',
+    'description': field.description,
   };
   path = '/api/v3/trackers/${config.docTrackers["Field"]}/items';
 
@@ -80,4 +73,12 @@ Future<Field> documentField(int trackerID, int fieldID) async {
   }
   newID = jsonDecode(response.body)['id'];
   return Field.fromJson(jsonDecode(response.body));
+}
+
+void main(List<String> args) async {
+  Field result =
+      await documentField(int.parse(args[0]), int.parse(args[1])) as Field;
+  if (result != null) {
+    print('...and the winner is ${result.name}');
+  }
 }

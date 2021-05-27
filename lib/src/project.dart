@@ -19,7 +19,7 @@ Future<Project> lookupProjectName(int projectID) async {
   Configuration config = Configuration();
   http.Response response;
 
-  String docServer = config.baseURLs['documentationServer'];
+  String docServer = config.baseURLs['documentationServer'] as String;
   String path = '/api/v3/items/query';
 
   try {
@@ -31,14 +31,14 @@ Future<Project> lookupProjectName(int projectID) async {
             {'page': '1', 'pageSize': '25', 'queryString': query}),
         headers: httpHeader());
   } catch (e, stackTrace) {
-    return null;
+    return Project();
   }
   if (response.statusCode == 200) {
     Map<String, dynamic> result = jsonDecode(response.body);
 
     if (result.length == 4 && result['total'] >= 1) {
       Map<String, dynamic> item = result['items'][0];
-
+      print(item);
       return Project.fromJson({
         'id': item['id'],
         'projectID': item['customFields'][0]['value'],
@@ -46,10 +46,10 @@ Future<Project> lookupProjectName(int projectID) async {
         'description': item['description'],
       });
     } else {
-      return null;
+      return Project();
     }
   }
-  return null;
+  return Project();
 }
 
 Future<List<Project>> fetchProjects() async {
@@ -58,7 +58,7 @@ Future<List<Project>> fetchProjects() async {
   Configuration config = Configuration();
 
   final response = await http.get(
-      Uri.https(config.baseURLs['homeServer'], '/api/v3/projects'),
+      Uri.https(config.baseURLs['homeServer'] as String, '/api/v3/projects'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
@@ -74,7 +74,7 @@ Future<List<Project>> fetchProjects() async {
     return projects;
   } else {
     print("Error ${response.statusCode}");
-    return null;
+    return [];
   }
 }
 
@@ -93,49 +93,51 @@ Future<ProjectDetail> fetchProjectDetail(int projectID) async {
   Configuration config = Configuration();
 
   final response = await http.get(
-      Uri.https(config.baseURLs['homeServer'], '/api/v3/projects/$projectID'),
+      Uri.https(config.baseURLs['homeServer'] as String,
+          '/api/v3/projects/$projectID'),
       headers: httpHeader());
 
   if (response.statusCode == 200) {
-    Map json = jsonDecode(response.body);
+    Map<String, dynamic> json = jsonDecode(response.body);
     return ProjectDetail.fromJson(json);
   } else {
     print("Error ${response.statusCode}");
-    return null;
+    return ProjectDetail();
   }
 }
 
 class ProjectDetail {
-  int id;
-  String name;
-  String description;
-  String descriptionFormat;
-  int version;
-  String keyName;
-  String category;
-  bool closed;
-  bool deleted;
-  bool template;
-  String createdAt;
-  CreatedBy createdBy;
-  String modifiedAt;
-  CreatedBy modifiedBy;
+  int id = 0;
+  String name = '';
+  String description = '';
+  String descriptionFormat = '';
+  int version = 0;
+  String keyName = '';
+  String category = '';
+  bool closed = false;
+  bool deleted = false;
+  bool template = false;
+  String createdAt = '';
+  String createdBy = '';
+  String modifiedAt = '';
+  String modifiedBy = '';
 
-  ProjectDetail(
-      {this.id,
-      this.name,
-      this.description,
-      this.descriptionFormat,
-      this.version,
-      this.keyName,
-      this.category,
-      this.closed,
-      this.deleted,
-      this.template,
-      this.createdAt,
-      this.createdBy,
-      this.modifiedAt,
-      this.modifiedBy});
+  ProjectDetail({
+    this.id = 0,
+    this.name = '',
+    this.description = '',
+    this.descriptionFormat = '',
+    this.version = 0,
+    this.keyName = '',
+    this.category = '',
+    this.closed = false,
+    this.deleted = false,
+    this.template = false,
+    this.createdAt = '',
+    this.createdBy = '',
+    this.modifiedAt = '',
+    this.modifiedBy = '',
+  });
 
   ProjectDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -149,13 +151,9 @@ class ProjectDetail {
     deleted = json['deleted'];
     template = json['template'];
     createdAt = json['createdAt'];
-    createdBy = json['createdBy'] != null
-        ? new CreatedBy.fromJson(json['createdBy'])
-        : null;
+    createdBy = json['createdBy'];
     modifiedAt = json['modifiedAt'];
-    modifiedBy = json['modifiedBy'] != null
-        ? new CreatedBy.fromJson(json['modifiedBy'])
-        : null;
+    modifiedBy = json['modifiedBy'];
   }
 
   Map<String, dynamic> toJson() {
@@ -171,47 +169,48 @@ class ProjectDetail {
     data['deleted'] = this.deleted;
     data['template'] = this.template;
     data['createdAt'] = this.createdAt;
-    if (this.createdBy != null) {
-      data['createdBy'] = this.createdBy.toJson();
-    }
+    data['createdBy'] = this.createdBy;
     data['modifiedAt'] = this.modifiedAt;
-    if (this.modifiedBy != null) {
-      data['modifiedBy'] = this.modifiedBy.toJson();
-    }
+    data['modifiedBy'] = this.modifiedBy;
     return data;
   }
 }
 
-class CreatedBy {
-  int id;
-  String name;
-  String type;
+// class CreatedBy {
+//   int id;
+//   String name;
+//   String type;
 
-  CreatedBy({this.id, this.name, this.type});
+//   CreatedBy({this.id = 0, this.name = '', this.type = ''});
 
-  CreatedBy.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    type = json['type'];
-  }
+//   CreatedBy.fromJson(Map<String, dynamic> json) {
+//     id = json['id'];
+//     name = json['name'];
+//     type = json['type'];
+//   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['type'] = this.type;
-    return data;
-  }
-}
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = new Map<String, dynamic>();
+//     data['id'] = this.id;
+//     data['name'] = this.name;
+//     data['type'] = this.type;
+//     return data;
+//   }
+// }
 
 class Project {
-  final int id;
-  final int projectID;
-  final String name;
-  final String type;
-  String description;
+  int id = 0;
+  int projectID = 0;
+  String name = '';
+  String type = '';
+  String description = '';
 
-  Project({this.id, this.projectID, this.name, this.type, this.description});
+  Project(
+      {this.id = 0,
+      this.projectID = 0,
+      this.name = '',
+      this.type = '',
+      this.description = ''});
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
