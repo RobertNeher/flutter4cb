@@ -19,12 +19,13 @@ void main(List<String> args) async {
    */
   Project project = await lookupProjectName(projectID);
 
-  if (project == null) {
-    project = await documentProject(projectID) as Project;
+  if (project.id == 0) {
+    project = await documentProject(projectID);
   }
 
-  if (project != null) {
+  if (project.id != 0) {
     List<Tracker> trackers = await fetchProjectTrackers(projectID);
+    print('$projectID: Tracker: ${trackers.length}');
 
     if (trackers != null) {
       trackers.forEach((tracker) async {

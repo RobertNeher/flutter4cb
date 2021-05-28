@@ -5,12 +5,7 @@ import '../../lib/src/helper.dart';
 
 import '../../lib/src/project.dart';
 
-void main(List<String> args) async {
-  Project result = await documentProject(int.parse(args[0])) as Project;
-  print('...and the winner is ${result.name}');
-}
-
-Future<Project?> documentProject(int projectID) async {
+Future<Project> documentProject(int projectID) async {
   Project project;
   ProjectDetail projDetail;
   Configuration config = Configuration();
@@ -26,13 +21,16 @@ Future<Project?> documentProject(int projectID) async {
         await http.get(Uri.https(homeServer, path), headers: httpHeader());
   } catch (e, stackTrace) {
     print('Error in fetching project details: $e: $stackTrace');
-    return null;
+    return Project();
   }
   if (response.statusCode != 200) {
     print('Error in fetching project details');
-    return null;
+    return Project();
   }
-  project = Project.fromJson(jsonDecode(response.body));
+  projectData = jsonDecode(response.body);
+  projectData.putIfAbsent('projectID', () => 0);
+  project = Project.fromJson(projectData);
+  print(project);
   projDetail = await fetchProjectDetail(project.id);
 
   projectData = {
@@ -56,11 +54,11 @@ Future<Project?> documentProject(int projectID) async {
         headers: httpHeader(), body: jsonEncode(projectData));
   } catch (e, stackTrace) {
     print('Error in posting project data: $e: $stackTrace');
-    return null;
+    return Project();
   }
   if (response.statusCode != 200) {
     print('Project not posted: ${response.statusCode}');
-    return null;
+    return Project();
   }
   return lookupProjectName(projectID);
 }
