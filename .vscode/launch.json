@@ -8,16 +8,9 @@
             "name": "Start_Documentation",
             "type": "dart",
             "request": "launch",
-            "console": "terminal",
-            "program": "bin/main.dart",
+            "program": "bin/documentation_engine.dart",
+            "cwd": "./documentation_engine",
             "args": ["5"]
-        },
-        {
-            "name": "Start_Documentation_of_Field",
-            "type": "dart",
-            "request": "launch",
-            "program": "lib/documentation/fieldDoc.dart",
-            "args": ["7394", "12"]
         },
         {
             "name": "Start_Field_Search",
